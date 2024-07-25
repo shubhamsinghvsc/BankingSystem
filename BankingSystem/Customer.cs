@@ -7,6 +7,13 @@
             Console.Clear();
             Utils.NavBar();
 
+            Console.WriteLine("LogIn".PadLeft(76, ' '));
+            Console.WriteLine("-----".PadLeft(76, ' ') + "\n\n");
+            Utils.boxMaker2(40, 55, "Email ID");
+            Utils.boxMaker2(40, 55, "Password");
+            Utils.button(15, 67, "  Log In");
+            Console.CursorVisible = true;
+
             Console.WriteLine("New Customer ...");
             Console.Write("Press Enter to Continue");
             Console.ReadLine();
@@ -18,12 +25,14 @@
             Utils.NavBar();
             Console.WriteLine("Signup".PadLeft(77, ' '));
             Console.WriteLine("------".PadLeft(77, ' ') + "\n\n");
-            Utils.boxMaker2(40, 55, "Name");
+            Utils.boxMaker(40, 55, "Name");
             Utils.boxMaker2(40, 55, "Email");
             Utils.boxMaker2(40, 55, "Password (Minmum 8 Characters)");
             Utils.boxMaker2(40, 55, "Confirm Password");
 
             Utils.button(15, 67, "  Sign Up");
+
+            Utils.button(30, 50, "button99");
 
 
             Console.CursorVisible = true;
@@ -31,16 +40,26 @@
             //Name
             while (true)
             {
-                Console.SetCursorPosition(57, 13);
+                Console.SetCursorPosition(57, 14);
+
+
+                Console.SetCursorPosition(57, 14);
+
                 String name = Console.ReadLine();
-                if (name.Length == 0)
+                if (name == "\t")
                 {
-                    Console.SetCursorPosition(57, 13);
+                    Console.WriteLine("Tabbbbbbbbbbbbb");
+                    Console.SetCursorPosition(57, 19);
+                    break;
+                }
+                else if (name.Length == 0)
+                {
+                    Console.SetCursorPosition(57, 14);
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Please Enter Your Name. !!");
                     Console.ResetColor();
                     Thread.Sleep(1500);
-                    Console.SetCursorPosition(57, 13);
+                    Console.SetCursorPosition(57, 14);
                     Console.WriteLine("                          ");
                 }
                 else
@@ -48,23 +67,24 @@
                     break;
                 }
 
+
             }
 
             //Email
             while (true)
             {
-                Console.SetCursorPosition(57, 18);
+                Console.SetCursorPosition(57, 19);
                 String email = Console.ReadLine();
                 email = email.ToLower();
 
                 if (email.Length == 0)
                 {
-                    Console.SetCursorPosition(57, 18);
+                    Console.SetCursorPosition(57, 19);
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Email is a required field!!");
                     Console.ResetColor();
                     Thread.Sleep(2000);
-                    Console.SetCursorPosition(57, 18);
+                    Console.SetCursorPosition(57, 19);
                     Console.WriteLine("                           ");
 
                 }
@@ -76,12 +96,12 @@
                 }
                 else
                 {
-                    Console.SetCursorPosition(57, 18);
+                    Console.SetCursorPosition(57, 19);
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Please enter Valid Email !!");
                     Thread.Sleep(2000);
                     Console.ResetColor();
-                    Console.SetCursorPosition(57, 18);
+                    Console.SetCursorPosition(57, 19);
                     Console.WriteLine("                           ");
                 }
             }
@@ -94,18 +114,18 @@
                 //password
                 while (true)
                 {
-                    Console.SetCursorPosition(57, 23);
+                    Console.SetCursorPosition(57, 24);
                     password = Console.ReadLine();
-                    Console.SetCursorPosition(57, 23);
+                    Console.SetCursorPosition(57, 24);
                     Console.WriteLine(new string('*', password.Length));
                     if (password.Length == 0 || password.Length < 8)
                     {
-                        Console.SetCursorPosition(57, 23);
+                        Console.SetCursorPosition(57, 24);
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Please Enter Valid Password !!");
                         Console.ResetColor();
                         Thread.Sleep(1500);
-                        Console.SetCursorPosition(57, 23);
+                        Console.SetCursorPosition(57, 24);
                         Console.WriteLine("                              ");
                     }
                     else
@@ -117,18 +137,18 @@
                 //confirm password
                 while (true)
                 {
-                    Console.SetCursorPosition(57, 28);
+                    Console.SetCursorPosition(57, 29);
                     confirmPassword = Console.ReadLine();
-                    Console.SetCursorPosition(57, 28);
+                    Console.SetCursorPosition(57, 29);
                     Console.WriteLine(new string('*', password.Length));
                     if (confirmPassword.Length == 0 || confirmPassword.Length < 8)
                     {
-                        Console.SetCursorPosition(57, 28);
+                        Console.SetCursorPosition(57, 29);
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Please Enter Valid Password !!");
                         Console.ResetColor();
                         Thread.Sleep(1500);
-                        Console.SetCursorPosition(57, 28);
+                        Console.SetCursorPosition(57, 29);
                         Console.WriteLine("                              ");
                     }
                     else
@@ -138,16 +158,16 @@
                 }
                 if (password != confirmPassword)
                 {
-                    Console.SetCursorPosition(57, 30);
+                    Console.SetCursorPosition(57, 31);
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Password Does't match !!");
                     Console.ResetColor();
                     Thread.Sleep(1000);
-                    Console.SetCursorPosition(57, 30);
+                    Console.SetCursorPosition(57, 31);
                     Console.WriteLine("                        ");
-                    Console.SetCursorPosition(57, 23);
+                    Console.SetCursorPosition(57, 24);
                     Console.WriteLine("                        ");
-                    Console.SetCursorPosition(57, 28);
+                    Console.SetCursorPosition(57, 29);
                     Console.WriteLine("                        ");
 
                 }

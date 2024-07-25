@@ -43,7 +43,7 @@
 
                 for (int i = 0; i < mainMenuOption.Length; i++)
                 {
-                    Console.SetCursorPosition(61, 13 + i);
+                    Console.SetCursorPosition(61, 13 + i * 2);
 
                     var color = menuSelector == i ? ConsoleColor.DarkYellow : ConsoleColor.Gray;
 
@@ -64,13 +64,28 @@
 
                 var keyPressed = Console.ReadKey();
 
-                if (keyPressed.Key == ConsoleKey.DownArrow && menuSelector != mainMenuOption.Length - 1)
+                if ((keyPressed.Key == ConsoleKey.DownArrow || keyPressed.Key == ConsoleKey.Tab))
                 {
-                    menuSelector++;
+                    if (menuSelector == mainMenuOption.Length - 1)
+                    {
+                        menuSelector = 0;
+                    }
+                    else
+                    {
+                        menuSelector++;
+                    }
                 }
-                else if (keyPressed.Key == ConsoleKey.UpArrow && menuSelector >= 1)
+                else if (keyPressed.Key == ConsoleKey.UpArrow)
                 {
-                    menuSelector--;
+                    if (menuSelector == 0)
+                    {
+                        menuSelector = mainMenuOption.Length - 1;
+                    }
+                    else
+                    {
+                        menuSelector--;
+                    }
+
                 }
                 else if (keyPressed.Key == ConsoleKey.Enter)
                 {
