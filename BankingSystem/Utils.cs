@@ -62,5 +62,24 @@
             Console.WriteLine(input);
             Console.WriteLine(line + "\n");
         }
+
+        public static void button(int boxSize, int leftPadding, string label)
+        {
+            string line = "";
+            for (int i = 0; i < boxSize; i++)
+            {
+                line += "-";
+            }
+            line = line.PadLeft(boxSize + leftPadding, ' ');
+
+            label = "| " + label;
+            label = label.PadLeft(leftPadding + label.Length, ' ');
+            label = label.PadRight((label.Length) + (boxSize + leftPadding - label.Length - 1), ' ') + "|";
+
+
+            Console.WriteLine(line);
+            Console.WriteLine(label);
+            Console.WriteLine(line + "\n");
+        }
     }
 }

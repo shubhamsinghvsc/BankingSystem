@@ -16,15 +16,15 @@
         {
             Console.Clear();
             Utils.NavBar();
-            Console.WriteLine("Signup".PadLeft(77, ' ') + "\n\n");
+            Console.WriteLine("Signup".PadLeft(77, ' '));
+            Console.WriteLine("------".PadLeft(77, ' ') + "\n\n");
             Utils.boxMaker2(40, 55, "Name");
             Utils.boxMaker2(40, 55, "Email");
             Utils.boxMaker2(40, 55, "Password (Minmum 8 Characters)");
             Utils.boxMaker2(40, 55, "Confirm Password");
 
-            Console.WriteLine("--------------");
-            Console.WriteLine("|   Sign UP  |");
-            Console.WriteLine("--------------");
+            Utils.button(15, 67, "  Sign Up");
+
 
             Console.CursorVisible = true;
 
