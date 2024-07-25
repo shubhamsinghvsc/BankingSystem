@@ -3,61 +3,22 @@
     internal class Program
     {
 
-        public static void Login()
-        {
-            Console.WriteLine("New Customer ...");
-            Console.Write("Press Enter to Continue");
-            Console.ReadLine();
-        }
 
-        public static void SignUp()
-        {
-            Console.WriteLine("New Staff ...");
-            Console.Write("Press Enter to Continue");
-            Console.ReadLine();
-        }
+        //static void Paint(int x, int y, String[] mainMenuOption, int menuSelector)
+        //{
+        //    for (int i = 0; i < mainMenuOption.Length; i++)
+        //    {
+        //        Console.SetCursorPosition(x, y + i);
 
-        public static void AdminLogin()
-        {
-            Console.WriteLine("Service ...");
-            Console.Write("Press Enter to Continue");
-            Console.ReadLine();
-        }
+        //        var color = menuSelector == i ? ConsoleColor.DarkYellow : ConsoleColor.Gray;
 
-        public static void Exit()
-        {
-            Console.WriteLine("Reparation ...");
-            Console.Write("Press Enter to Continue");
-            Console.ReadLine();
-        }
-
-        static void Paint(int x, int y, String[] mainMenuOption, int menuSelector)
-        {
-            for (int i = 0; i < mainMenuOption.Length; i++)
-            {
-                Console.SetCursorPosition(x, y + i);
-
-                var color = menuSelector == i ? ConsoleColor.Yellow : ConsoleColor.Gray;
-
-                Console.ForegroundColor = color;
-                Console.WriteLine(mainMenuOption[i]);
-            }
-        }
+        //        Console.ForegroundColor = color;
+        //        Console.WriteLine(mainMenuOption[i]);
+        //    }
+        //}
 
 
-        // NavBar
-        static void NavBar()
-        {
-            DateTime dateTime = DateTime.Now;
-            string userName = "shubham";
-            Console.WriteLine("\n");
-            Console.WriteLine("             ----------------------------------------------------------------------------------------------------------------------------");
-            Console.WriteLine("             |                                                  State Bank Of Bharat                                                    |");
-            Console.WriteLine($"             | Date: {dateTime.Day}-{dateTime.Month}-{dateTime.Year}                                                                                            User: {userName} |");
-            Console.WriteLine("             ----------------------------------------------------------------------------------------------------------------------------");
-            Console.WriteLine("\n");
 
-        }
 
         //Main Menu
 
@@ -74,10 +35,21 @@
             {
                 //Console.Clear();
 
-                //NavBar();
+                // Utils.NavBar();
                 Console.CursorVisible = false;
 
-                Paint(61, 13, mainMenuOption, menuSelector);
+                // Paint(61, 13, mainMenuOption, menuSelector);
+
+
+                for (int i = 0; i < mainMenuOption.Length; i++)
+                {
+                    Console.SetCursorPosition(61, 13 + i);
+
+                    var color = menuSelector == i ? ConsoleColor.DarkYellow : ConsoleColor.Gray;
+
+                    Console.ForegroundColor = color;
+                    Console.WriteLine(mainMenuOption[i]);
+                }
 
                 //for (int i = 0; i < mainMenuOption.Length; i++)
                 //{
@@ -105,16 +77,18 @@
                     switch (menuSelector)
                     {
                         case 0:
-                            Login();
+                            Console.Clear();
+                            Customer.Login();
                             break;
                         case 1:
-                            SignUp();
+                            Console.Clear();
+                            Customer.SignUp();
                             break;
                         case 2:
-                            AdminLogin();
+                            Customer.AdminLogin();
                             break;
                         case 3:
-
+                            done = true;
                             break;
                         default:
                             Console.WriteLine("oops something went wrong");
@@ -124,9 +98,10 @@
             } while (!done);
         }
 
+        //Main Method
         static void Main(string[] args)
         {
-            NavBar();
+            Utils.NavBar();
             MainMenu();
             Console.ReadLine();
 
