@@ -1,4 +1,5 @@
-﻿namespace BankingSystem
+﻿using BankingSystem.Customers;
+namespace BankingSystem
 {
     internal class Program
     {
@@ -93,7 +94,10 @@
                     {
                         case 0:
                             Console.Clear();
+
                             Customer.Login();
+
+
                             break;
                         case 1:
                             Console.Clear();
@@ -116,8 +120,13 @@
         //Main Method
         static void Main(string[] args)
         {
+
             Utils.NavBar();
             MainMenu();
+
+            // testing development of customer menu
+            // Customer.CustomerMainMenu();
+
             Console.ReadLine();
 
         }
