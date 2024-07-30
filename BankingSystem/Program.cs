@@ -4,26 +4,7 @@ namespace BankingSystem
     internal class Program
     {
 
-
-        //static void Paint(int x, int y, String[] mainMenuOption, int menuSelector)
-        //{
-        //    for (int i = 0; i < mainMenuOption.Length; i++)
-        //    {
-        //        Console.SetCursorPosition(x, y + i);
-
-        //        var color = menuSelector == i ? ConsoleColor.DarkYellow : ConsoleColor.Gray;
-
-        //        Console.ForegroundColor = color;
-        //        Console.WriteLine(mainMenuOption[i]);
-        //    }
-        //}
-
-
-
-
         //Main Menu
-
-
         static void MainMenu()
         {
             string[] mainMenuOption = new string[] { "\n\t\t\t\t\t\t\t     1. Login", "\n\t\t\t\t\t\t\t     2. SignUp", "\n\t\t\t\t\t\t\t     3. Admin Login", "\n\t\t\t\t\t\t\t     4. Exit" };
@@ -51,17 +32,6 @@ namespace BankingSystem
                     Console.ForegroundColor = color;
                     Console.WriteLine(mainMenuOption[i]);
                 }
-
-                //for (int i = 0; i < mainMenuOption.Length; i++)
-                //{
-                //    //Console.ForegroundColor = ConsoleColor.Yellow;
-                //    if (menuSelector == i)
-                //    {
-                //        Console.ForegroundColor = ConsoleColor.Green;
-                //    }
-                //    Console.WriteLine($"{mainMenuOption[i]}");
-                //    Console.ResetColor();
-                //}
 
                 var keyPressed = Console.ReadKey();
 
@@ -95,13 +65,13 @@ namespace BankingSystem
                         case 0:
                             Console.Clear();
 
-                            Customer.Login();
-
+                            //Customer.Login();
+                            Login.CustomerLogin("Customer");
 
                             break;
                         case 1:
                             Console.Clear();
-                            Customer.SignUp();
+                            Signup.CustomerSignup();
                             break;
                         case 2:
                             Customer.AdminLogin();
@@ -122,8 +92,8 @@ namespace BankingSystem
         {
 
             Utils.NavBar();
-            MainMenu();
-
+            //MainMenu();
+            Customer.CustomerMainMenu();
             // testing development of customer menu
             // Customer.CustomerMainMenu();
 
