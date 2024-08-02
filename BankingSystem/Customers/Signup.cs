@@ -84,7 +84,7 @@ namespace BankingSystem.Customers
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Email is a required field!!");
                     Console.ResetColor();
-                    Thread.Sleep(2000);
+                    Thread.Sleep(1500);
                     Console.SetCursorPosition(57, 19);
                     Console.WriteLine("                           ");
 

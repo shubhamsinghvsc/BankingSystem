@@ -130,6 +130,16 @@ namespace BankingSystem.Customers
                         if (IsPasswordMatched(users, password))
                         {
                             Utils.whoIsLoggedIn = email;
+                            int index = 0;
+                            for (int i = 0; i < users.Count; i++)
+                            {
+                                if (users[i].Email == email)
+                                {
+                                    index = i;
+                                    break;
+                                }
+                            }
+                            Utils.LoggedUserName = users[index].Name;
                             CustomerMainMenu();
                         }
                         break;

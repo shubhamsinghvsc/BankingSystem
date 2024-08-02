@@ -187,110 +187,131 @@ public class Customer
 
         Console.CursorVisible = true;
         Console.WriteLine("\n\n\t\t\t\t\t\t Press escape to go to Main Menu and Enter to continue.");
-        ConsoleKeyInfo key = Console.ReadKey();
-        if (key.Key == ConsoleKey.Escape)
-        {
-            return;
-        }
+        //ConsoleKeyInfo key = Console.ReadKey();
+        //if (key.Key == ConsoleKey.Escape)
+        //{
+        //    return;
+        //}
         int accountNumber;
         int reenterAccountNumber;
-        int amount;
+        int amount = 0;
         do
         {
-            Console.SetCursorPosition(57, 16);
-            accountNumber = Utils.OnlyIntegerInput();
-
-            Console.SetCursorPosition(57, 21);
-            reenterAccountNumber = Utils.OnlyIntegerInput();
-
-
-            Console.SetCursorPosition(57, 26);
-            amount = Utils.OnlyIntegerInput();
-
-            if (accountNumber != reenterAccountNumber)
+            do
             {
-                string msgAccNumber = "Account Number does not match !!";
+                Console.SetCursorPosition(57, 16);
+                accountNumber = Utils.OnlyIntegerInputHidden();
+                Console.SetCursorPosition(57, 21);
+                reenterAccountNumber = Utils.OnlyIntegerInput();
+
+                if (accountNumber != reenterAccountNumber)
+                {
+                    string msgAccNumber = "Account Number does not match !!";
+
+                    Utils.EraseText(10, 57, 16);
+                    Utils.EraseText(10, 57, 21);
+                    Utils.EraseText(10, 57, 26);
+
+                    Console.SetCursorPosition(57, 12);
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(msgAccNumber);
+                    Thread.Sleep(1500);
+                    Utils.EraseText(msgAccNumber.Length, 57, 12);
+                    Console.ResetColor();
+
+                    continue;
+
+                }
+                Console.SetCursorPosition(57, 26);
+                amount = Utils.OnlyIntegerInput();
+            } while (accountNumber != reenterAccountNumber);
 
 
+            int index = 0;
+
+            for (int i = 0; i < users.Count; i++)
+            {
+                if (users[i].AccountNumber == accountNumber)
+                {
+                    accountExist = true;
+                    index = i;
+                }
+            }
+
+
+            if (!accountExist)
+            {
                 Utils.EraseText(10, 57, 16);
                 Utils.EraseText(10, 57, 21);
                 Utils.EraseText(10, 57, 26);
 
-                Console.SetCursorPosition(57, 29);
+                string msgAccNumber = "!! Account Number Does Not Exist. !!";
+                Console.SetCursorPosition(57, 12);
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(msgAccNumber);
                 Thread.Sleep(1500);
-                Utils.EraseText(msgAccNumber.Length, 57, 29);
+                Utils.EraseText(msgAccNumber.Length, 57, 12);
                 Console.ResetColor();
 
             }
-        } while (accountNumber != reenterAccountNumber);
 
-
-        int index = 0;
-
-        for (int i = 0; i < users.Count; i++)
-        {
-            if (users[i].AccountNumber == accountNumber)
-            {
-                accountExist = true;
-                index = i;
-            }
-        }
-
-
-        Console.WriteLine("sender : " + userIndex);
-        if (!accountExist)
-        {
-            Console.WriteLine("Account does not exist");
-
-        }
-        else
-        {
-            if (users[userIndex].BankBalance >= amount)
-            {
-                users[index].BankBalance += amount;
-                users[userIndex].BankBalance -= amount;
-                Console.WriteLine("Amount transfered");
-                List<TransactionHistory> senderHistory = new List<TransactionHistory>();
-                List<TransactionHistory> receiverHistory = new List<TransactionHistory>();
-                senderHistory = users[index].transactionHistories;
-                receiverHistory = users[userIndex].transactionHistories;
-                senderHistory.Add(
-                    new TransactionHistory()
-                    {
-                        TransactionId = "1",
-                        TransactionType = "DR",
-                        TransactionAmount = amount,
-                        TransactionDate = DateTime.Now.ToString(),
-                        AccountHolderName = users[index].Name,
-                        AccountNumber = accountNumber,
-
-                    }
-                    );
-                receiverHistory.Add(
-                    new TransactionHistory()
-                    {
-                        TransactionId = "1",
-                        TransactionType = "CR",
-                        TransactionAmount = amount,
-                        TransactionDate = DateTime.Now.ToString(),
-                        AccountHolderName = users[userIndex].Name,
-                        AccountNumber = users[userIndex].AccountNumber,
-
-                    }
-                    );
-
-                users[index].transactionHistories = receiverHistory;
-                users[userIndex].transactionHistories = senderHistory;
-            }
             else
             {
-                Console.SetCursorPosition(70, 30);
-                Console.WriteLine("insufficient Account Balance !!");
-            }
+                if (users[userIndex].BankBalance >= amount)
+                {
+                    users[index].BankBalance += amount;
+                    users[userIndex].BankBalance -= amount;
 
-        }
+                    string msgAccNumber = "Money  Transfered  Successfull";
+                    Console.SetCursorPosition(57, 29);
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine(msgAccNumber);
+                    Thread.Sleep(1500);
+                    Utils.EraseText(msgAccNumber.Length, 57, 29);
+                    Console.ResetColor();
+                    List<TransactionHistory> senderHistory = new List<TransactionHistory>();
+                    List<TransactionHistory> receiverHistory = new List<TransactionHistory>();
+                    senderHistory = users[userIndex].transactionHistories;
+                    receiverHistory = users[index].transactionHistories;
+                    senderHistory.Add(
+                        new TransactionHistory()
+                        {
+                            TransactionId = "1",
+                            TransactionType = "DR",
+                            TransactionAmount = amount,
+                            TransactionDate = DateTime.Now.ToString(),
+                            AccountHolderName = users[index].Name,
+                            AccountNumber = accountNumber,
+
+                        }
+                        );
+                    receiverHistory.Add(
+                        new TransactionHistory()
+                        {
+                            TransactionId = "1",
+                            TransactionType = "CR",
+                            TransactionAmount = amount,
+                            TransactionDate = DateTime.Now.ToString(),
+                            AccountHolderName = users[userIndex].Name,
+                            AccountNumber = users[userIndex].AccountNumber,
+
+                        }
+                        );
+
+                    users[index].transactionHistories = receiverHistory;
+                    users[userIndex].transactionHistories = senderHistory;
+                }
+                else
+                {
+                    Console.SetCursorPosition(70, 30);
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Insufficient Account Balance !!");
+                    Thread.Sleep(1500);
+                    Console.ResetColor();
+                }
+
+            }
+        } while (!accountExist);
 
 
         string updatedJson = JsonConvert.SerializeObject(users, Formatting.Indented);
@@ -299,7 +320,36 @@ public class Customer
     }
     public static void Passbook()
     {
-        Console.WriteLine("Passbook option is UNDER CONSTRUCTION");
+        Utils.NavBar();
+        Utils.HeadingUnderlined("Transaction History", 65);
+
+        string filePath = "users.json";
+        List<Users> users = new List<Users>();
+        if (File.Exists(filePath))
+        {
+            string text = File.ReadAllText(filePath);
+            users = JsonConvert.DeserializeObject<List<Users>>(text) ?? new List<Users>();
+        }
+
+        int index = 0;
+        for (int i = 0; i < users.Count; i++)
+        {
+            if (users[i].Email == Utils.whoIsLoggedIn)
+            {
+                index = i;
+                break;
+            }
+        }
+
+        List<TransactionHistory> userTransaction = users[index].transactionHistories;
+        for (int i = 0; i < userTransaction.Count; i++)
+        {
+            Utils.HistoryBar(userTransaction[i].TransactionId, userTransaction[i].TransactionType, Convert.ToString(userTransaction[i].TransactionAmount), userTransaction[i].TransactionDate, userTransaction[i].AccountHolderName, Convert.ToString(userTransaction[i].AccountNumber));
+        }
+
+
+
+        Console.ReadLine();
     }
     public static void Menu()
     {
@@ -368,12 +418,14 @@ public class Customer
                         Deposit();
                         break;
                     case 2:
+                        Console.Clear();
                         TransferMoney();
                         Console.Clear();
 
                         break;
 
                     case 3:
+                        Console.Clear();
                         Passbook();
                         break;
                     case 4:

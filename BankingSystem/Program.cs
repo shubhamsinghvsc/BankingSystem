@@ -92,10 +92,12 @@ namespace BankingSystem
         {
 
             Utils.NavBar();
+            // Utils.NavBar2();
             MainMenu();
-            //Customer.CustomerMainMenu();
+            // Customer.CustomerMainMenu();
             // testing development of customer menu
             // Customer.CustomerMainMenu();
+
 
             Console.ReadLine();
 
