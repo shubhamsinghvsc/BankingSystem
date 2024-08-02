@@ -158,16 +158,35 @@ public class Customer
     }
     public static void TransferMoney()
     {
+        string filePath = "users.json";
+        List<Users> users = new List<Users>();
+        if (File.Exists(filePath))
+        {
+            string text = File.ReadAllText(filePath);
+            users = JsonConvert.DeserializeObject<List<Users>>(text) ?? new List<Users>();
+        }
+        bool accountExist = false;
+
+        int userIndex = 0;
+        for (int i = 0; i < users.Count; i++)
+        {
+            if (users[i].Email == Utils.whoIsLoggedIn)
+            {
+                userIndex = i;
+            }
+        }
+
         Console.Clear();
         Utils.NavBar();
-
+        //Console.SetCursorPosition(80, 10);
+        Console.WriteLine($"\t\t\t\t\t\t\t\t\t\t\t\t\t\t       Balance : {users[userIndex].BankBalance}");
         Utils.HeadingUnderlined("Transfer Money", 67);
         Utils.boxMaker2(40, 55, "Account Number");
         Utils.boxMaker2(40, 55, "Reenter Account Number");
         Utils.boxMaker2(40, 55, "Amount");
 
         Console.CursorVisible = true;
-        Console.WriteLine("Press escape to go to Main Menu");
+        Console.WriteLine("\n\n\t\t\t\t\t\t Press escape to go to Main Menu and Enter to continue.");
         ConsoleKeyInfo key = Console.ReadKey();
         if (key.Key == ConsoleKey.Escape)
         {
@@ -178,14 +197,14 @@ public class Customer
         int amount;
         do
         {
-            Console.SetCursorPosition(57, 15);
+            Console.SetCursorPosition(57, 16);
             accountNumber = Utils.OnlyIntegerInput();
 
-            Console.SetCursorPosition(57, 20);
+            Console.SetCursorPosition(57, 21);
             reenterAccountNumber = Utils.OnlyIntegerInput();
 
 
-            Console.SetCursorPosition(57, 25);
+            Console.SetCursorPosition(57, 26);
             amount = Utils.OnlyIntegerInput();
 
             if (accountNumber != reenterAccountNumber)
@@ -193,29 +212,23 @@ public class Customer
                 string msgAccNumber = "Account Number does not match !!";
 
 
-                Utils.EraseText(10, 57, 15);
-                Utils.EraseText(10, 57, 20);
-                Utils.EraseText(10, 57, 25);
+                Utils.EraseText(10, 57, 16);
+                Utils.EraseText(10, 57, 21);
+                Utils.EraseText(10, 57, 26);
 
-                Console.SetCursorPosition(57, 28);
+                Console.SetCursorPosition(57, 29);
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(msgAccNumber);
                 Thread.Sleep(1500);
-                Utils.EraseText(msgAccNumber.Length, 57, 28);
+                Utils.EraseText(msgAccNumber.Length, 57, 29);
                 Console.ResetColor();
 
             }
         } while (accountNumber != reenterAccountNumber);
 
-        string filePath = "users.json";
-        List<Users> users = new List<Users>();
-        if (File.Exists(filePath))
-        {
-            string text = File.ReadAllText(filePath);
-            users = JsonConvert.DeserializeObject<List<Users>>(text) ?? new List<Users>();
-        }
-        bool accountExist = false;
+
         int index = 0;
+
         for (int i = 0; i < users.Count; i++)
         {
             if (users[i].AccountNumber == accountNumber)
@@ -224,6 +237,9 @@ public class Customer
                 index = i;
             }
         }
+
+
+        Console.WriteLine("sender : " + userIndex);
         if (!accountExist)
         {
             Console.WriteLine("Account does not exist");
@@ -231,9 +247,54 @@ public class Customer
         }
         else
         {
-            users[index].BankBalance += amount;
-            //users[].BankBalance -= amount;
+            if (users[userIndex].BankBalance >= amount)
+            {
+                users[index].BankBalance += amount;
+                users[userIndex].BankBalance -= amount;
+                Console.WriteLine("Amount transfered");
+                List<TransactionHistory> senderHistory = new List<TransactionHistory>();
+                List<TransactionHistory> receiverHistory = new List<TransactionHistory>();
+                senderHistory = users[index].transactionHistories;
+                receiverHistory = users[userIndex].transactionHistories;
+                senderHistory.Add(
+                    new TransactionHistory()
+                    {
+                        TransactionId = "1",
+                        TransactionType = "DR",
+                        TransactionAmount = amount,
+                        TransactionDate = DateTime.Now.ToString(),
+                        AccountHolderName = users[index].Name,
+                        AccountNumber = accountNumber,
+
+                    }
+                    );
+                receiverHistory.Add(
+                    new TransactionHistory()
+                    {
+                        TransactionId = "1",
+                        TransactionType = "CR",
+                        TransactionAmount = amount,
+                        TransactionDate = DateTime.Now.ToString(),
+                        AccountHolderName = users[userIndex].Name,
+                        AccountNumber = users[userIndex].AccountNumber,
+
+                    }
+                    );
+
+                users[index].transactionHistories = receiverHistory;
+                users[userIndex].transactionHistories = senderHistory;
+            }
+            else
+            {
+                Console.SetCursorPosition(70, 30);
+                Console.WriteLine("insufficient Account Balance !!");
+            }
+
         }
+
+
+        string updatedJson = JsonConvert.SerializeObject(users, Formatting.Indented);
+        File.WriteAllText(filePath, updatedJson);
         Console.ReadLine();
     }
     public static void Passbook()
