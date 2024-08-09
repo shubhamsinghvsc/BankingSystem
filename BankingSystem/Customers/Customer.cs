@@ -5,28 +5,7 @@ using Newtonsoft.Json;
 namespace BankingSystem.Customers;
 public class Customer
 {
-    //public class Users
-    //{
-    //    public string Name { get; set; }
-    //    public string Email { get; set; }
-    //    public string Password { get; set; }
-    //    public bool IsNewUser { get; set; }
-    //    public int Pin { get; set; }
-    //    public long AccountNumber { get; set; }
-    //    public long BankBalance { get; set; }
-    //    public List<TransactionHistory> transactionHistories { get; set; }
-    //}
-
-    //public class TransactionHistory
-    //{
-    //    public string TransactionId { get; set; } = string.Empty;
-    //    public string TransactionType { get; set; }
-    //    public long TransactionAmount { get; set; }
-    //    public string TransactionDate { get; set; }
-    //    public string AccountHolderName { get; set; }
-    //    public long AccountNumber { get; set; }
-
-    //}
+    private const string filePath = "users.json";
 
     public static void AdminLogin()
     {
@@ -43,62 +22,78 @@ public class Customer
         Console.Write("Press Enter to Continue");
         Console.ReadLine();
     }
-    static bool IsEmailExist(List<Users> user, string email)
+    private static bool IsEmailExist(List<Users> users, string email)
     {
-        foreach (Users user1 in user)
-        {
-            if (user1.Email == email)
-            {
-                return true;
-            }
-        }
-        return false;
+        //foreach (Users user1 in users)
+        //{
+        //    if (user1.Email == email)
+        //    {
+        //        return true;
+        //    }
+        //}
+        //return false;
+        return users.Any(user => user.Email == email);
     }
 
-    static bool IsPasswordMatched(List<Users> user, string password)
+    private static bool IsPasswordMatched(List<Users> users, string password)
     {
-        foreach (Users user1 in user)
-        {
-            if (user1.Password == password)
-            {
-                return true;
-            }
-        }
-        return false;
+        //foreach (Users user1 in users)
+        //{
+        //    if (user1.Password == password)
+        //    {
+        //        return true;
+        //    }
+        //}
+        //return false;
+        return users.Any(user => user.Password == password);
     }
 
+    private static List<Users> LoadUsers()
+    {
+        if (!File.Exists(filePath))
+        {
+            return new List<Users>();
+        }
+        string json = File.ReadAllText(filePath);
+        return JsonConvert.DeserializeObject<List<Users>>(json) ?? new List<Users>();
+    }
+
+    private static void SaveUsers(List<Users> users)
+    {
+        string json = JsonConvert.SerializeObject(users, Formatting.Indented);
+        File.WriteAllText(filePath, json);
+    }
     public static void Withdraw()
     {
         //string jsonString = File.ReadAllText(@"C:\Users\VSOFT\source\repos\BankingSystem\BankingSystem\bin\Debug\net8.0\users.json");
-        string json = File.ReadAllText("users.json");
-        dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
-        int index = 0;
-        for (int i = 0; i < jsonObj.Count; i++)
-        {
-            if (jsonObj[i].Email == Utils.whoIsLoggedIn)
-            {
-                index = i;
-                break;
-            }
+        // string json = File.ReadAllText("users.json");
+        // dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
 
+        List<Users> users = LoadUsers();
+        var user = users.FirstOrDefault(user => user.Email == Utils.whoIsLoggedIn);
+
+        if (user == null)
+        {
+            return;
         }
 
         Console.Clear();
         Utils.NavBar();
         Console.WriteLine("\t\t\t\t\t\t\t\t     WITHDRAW");
         Console.WriteLine("\t\t\t\t\t\t\t\t     --------\n");
-        Console.WriteLine($"\t\t\t\t\t\t\t\t\t\t\t\t\t\t       Balance : {jsonObj[index].BankBalance}\n");
+        Console.WriteLine($"\t\t\t\t\t\t\t\t\t\t\t\t\t\t       Balance : {user.BankBalance}\n");
         Utils.boxMaker2(40, 55, "Withdraw Amount ");
 
 
         Console.SetCursorPosition(0, 21);
         Utils.button(20, 65, "    withdraw");
 
+        Console.SetCursorPosition(56, 15);
         Console.CursorVisible = true;
 
-        Console.SetCursorPosition(56, 15);
         int withdrawAmount = Utils.OnlyIntegerInput();
         Console.CursorVisible = false;
+
         if (withdrawAmount == -1)
         {
             return;
@@ -112,7 +107,7 @@ public class Customer
         ConsoleKeyInfo key = Console.ReadKey();
         if (key.Key == ConsoleKey.Enter)
         {
-            if (jsonObj[index].BankBalance < withdrawAmount)
+            if (user.BankBalance < withdrawAmount)
             {
                 Console.SetCursorPosition(61, 18);
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -122,7 +117,7 @@ public class Customer
             }
             else
             {
-                jsonObj[index]["BankBalance"] -= withdrawAmount;
+                user.BankBalance -= withdrawAmount;
                 Console.SetCursorPosition(61, 18);
                 Console.WriteLine($"Rs. {withdrawAmount} Withdrawed");
             }
@@ -134,8 +129,8 @@ public class Customer
             return;
         }
 
-        string output = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
-        File.WriteAllText("users.json", output);
+        SaveUsers(users);
+
         Console.ReadLine();
         Console.Clear();
         Utils.NavBar();
@@ -144,24 +139,16 @@ public class Customer
     }
     public static void Deposit()
     {
-        string json = File.ReadAllText("users.json");
-        dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
-        int index = 0;
-        for (int i = 0; i < jsonObj.Count; i++)
-        {
-            if (jsonObj[i].Email == Utils.whoIsLoggedIn)
-            {
-                index = i;
-                break;
-            }
+        List<Users> users = LoadUsers();
+        var user = users.FirstOrDefault(user => user.Email == Utils.whoIsLoggedIn);
+        if (user == null) return;
 
-        }
 
         Console.Clear();
         Utils.NavBar();
         Console.WriteLine("\t\t\t\t\t\t\t\t     Deposite");
         Console.WriteLine("\t\t\t\t\t\t\t\t     --------\n");
-        Console.WriteLine($"\t\t\t\t\t\t\t\t\t\t\t\t\t\t       Balance : {jsonObj[index].BankBalance}\n");
+        Console.WriteLine($"\t\t\t\t\t\t\t\t\t\t\t\t\t\t       Balance : {user.BankBalance}\n");
 
         Utils.boxMaker2(40, 55, "Deposite Amount ");
 
@@ -173,15 +160,12 @@ public class Customer
             return;
         }
 
-        jsonObj[index]["BankBalance"] += depositeAmount;
+        user.BankBalance += depositeAmount;
         Console.SetCursorPosition(56, 18);
         Console.WriteLine($"Rs. {depositeAmount} Amount Deposited");
 
 
-        string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
-        File.WriteAllText("users.json", output);
-
-
+        SaveUsers(users);
 
         Console.ReadLine();
         Console.Clear();
@@ -191,28 +175,16 @@ public class Customer
     }
     public static void TransferMoney()
     {
-        string filePath = "users.json";
-        List<Users> users = new List<Users>();
-        if (File.Exists(filePath))
-        {
-            string text = File.ReadAllText(filePath);
-            users = JsonConvert.DeserializeObject<List<Users>>(text) ?? new List<Users>();
-        }
-        bool accountExist = false;
+        List<Users> users = LoadUsers();
+        var sender = users.FirstOrDefault(user => user.Email == Utils.whoIsLoggedIn);
+        if (sender == null) return;
 
-        int userIndex = 0;
-        for (int i = 0; i < users.Count; i++)
-        {
-            if (users[i].Email == Utils.whoIsLoggedIn)
-            {
-                userIndex = i;
-            }
-        }
+
 
         Console.Clear();
         Utils.NavBar();
         //Console.SetCursorPosition(80, 10);
-        Console.WriteLine($"\t\t\t\t\t\t\t\t\t\t\t\t\t\t       Balance : {users[userIndex].BankBalance}");
+        Console.WriteLine($"\t\t\t\t\t\t\t\t\t\t\t\t\t\t       Balance : {sender.BankBalance}");
         Utils.HeadingUnderlined("Transfer Money", 67);
         Utils.boxMaker2(40, 55, "Account Number");
         Utils.boxMaker2(40, 55, "Reenter Account Number");
@@ -223,6 +195,7 @@ public class Customer
         int accountNumber;
         int reenterAccountNumber;
         int amount = 0;
+        bool accountExist = false;
         do
         {
             do
@@ -266,19 +239,10 @@ public class Customer
             } while (accountNumber != reenterAccountNumber);
 
 
-            int index = 0;
-
-            for (int i = 0; i < users.Count; i++)
-            {
-                if (users[i].AccountNumber == accountNumber)
-                {
-                    accountExist = true;
-                    index = i;
-                }
-            }
+            var receiver = users.FirstOrDefault(user => user.AccountNumber == accountNumber);
 
 
-            if (!accountExist)
+            if (receiver == null)
             {
                 Utils.EraseText(10, 57, 16);
                 Utils.EraseText(10, 57, 21);
@@ -296,10 +260,11 @@ public class Customer
 
             else
             {
-                if (users[userIndex].BankBalance >= amount)
+                accountExist = true;
+                if (sender.BankBalance >= amount)
                 {
-                    users[index].BankBalance += amount;
-                    users[userIndex].BankBalance -= amount;
+                    receiver.BankBalance += amount;
+                    sender.BankBalance -= amount;
 
                     string msgAccNumber = "Money  Transfered  Successfull";
                     Console.SetCursorPosition(57, 29);
@@ -310,8 +275,8 @@ public class Customer
                     Console.ResetColor();
                     List<TransactionHistory> senderHistory = new List<TransactionHistory>();
                     List<TransactionHistory> receiverHistory = new List<TransactionHistory>();
-                    senderHistory = users[userIndex].transactionHistories;
-                    receiverHistory = users[index].transactionHistories;
+                    senderHistory = sender.transactionHistories;
+                    receiverHistory = receiver.transactionHistories;
                     senderHistory.Add(
                         new TransactionHistory()
                         {
@@ -319,7 +284,7 @@ public class Customer
                             TransactionType = "DR",
                             TransactionAmount = amount,
                             TransactionDate = DateTime.Now.ToString(),
-                            AccountHolderName = users[index].Name,
+                            AccountHolderName = receiver.Name,
                             AccountNumber = accountNumber,
 
                         }
@@ -331,14 +296,14 @@ public class Customer
                             TransactionType = "CR",
                             TransactionAmount = amount,
                             TransactionDate = DateTime.Now.ToString(),
-                            AccountHolderName = users[userIndex].Name,
-                            AccountNumber = users[userIndex].AccountNumber,
+                            AccountHolderName = sender.Name,
+                            AccountNumber = sender.AccountNumber,
 
                         }
                         );
 
-                    users[index].transactionHistories = receiverHistory;
-                    users[userIndex].transactionHistories = senderHistory;
+                    receiver.transactionHistories = receiverHistory;
+                    sender.transactionHistories = senderHistory;
                 }
                 else
                 {
@@ -352,9 +317,8 @@ public class Customer
             }
         } while (!accountExist);
 
+        SaveUsers(users);
 
-        string updatedJson = JsonConvert.SerializeObject(users, Formatting.Indented);
-        File.WriteAllText(filePath, updatedJson);
         Console.ReadLine();
     }
     public static void Passbook()
@@ -362,28 +326,24 @@ public class Customer
         Utils.NavBar();
         Utils.HeadingUnderlined("Transaction History", 65);
 
-        string filePath = "users.json";
-        List<Users> users = new List<Users>();
-        if (File.Exists(filePath))
+        List<Users> users = LoadUsers();
+        var user = users.FirstOrDefault(user => user.Email == Utils.whoIsLoggedIn);
+        if (user == null)
         {
-            string text = File.ReadAllText(filePath);
-            users = JsonConvert.DeserializeObject<List<Users>>(text) ?? new List<Users>();
+            return;
         }
 
-        int index = 0;
-        for (int i = 0; i < users.Count; i++)
+        List<TransactionHistory> userTransaction = user.transactionHistories;
+        foreach (TransactionHistory transactionHistory in userTransaction)
         {
-            if (users[i].Email == Utils.whoIsLoggedIn)
-            {
-                index = i;
-                break;
-            }
-        }
-
-        List<TransactionHistory> userTransaction = users[index].transactionHistories;
-        for (int i = 0; i < userTransaction.Count; i++)
-        {
-            Utils.HistoryBar(userTransaction[i].TransactionId, userTransaction[i].TransactionType, Convert.ToString(userTransaction[i].TransactionAmount), userTransaction[i].TransactionDate, userTransaction[i].AccountHolderName, Convert.ToString(userTransaction[i].AccountNumber));
+            Utils.HistoryBar(
+                transactionHistory.TransactionId,
+                    transactionHistory.TransactionType,
+                    transactionHistory.TransactionAmount.ToString(),
+                    transactionHistory.TransactionDate,
+                    transactionHistory.AccountHolderName,
+                    transactionHistory.AccountNumber.ToString()
+                );
         }
 
         Console.SetCursorPosition(0, 0);
@@ -404,8 +364,8 @@ public class Customer
 
     public static void Logout()
     {
-        Utils.whoIsLoggedIn = "";
-        Utils.LoggedUserName = "";
+        Utils.whoIsLoggedIn = string.Empty;
+        Utils.LoggedUserName = string.Empty;
         Console.ResetColor();
         Utils.NavBar();
         Program.MainMenu();
