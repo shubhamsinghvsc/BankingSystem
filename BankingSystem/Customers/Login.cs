@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using BankingSystem.Models;
+using Newtonsoft.Json;
 using static BankingSystem.Customers.Customer;
 
 namespace BankingSystem.Customers
@@ -57,9 +58,12 @@ namespace BankingSystem.Customers
             while (true)
             {
                 Console.SetCursorPosition(57, 14);
-                email = Console.ReadLine();
+                email = Utils.OnlyStringInput();
+                if (email == null)
+                {
+                    return;
+                }
                 email = email.ToLower();
-
                 if (email.Length == 0)
                 {
                     Console.SetCursorPosition(57, 14);
@@ -94,7 +98,7 @@ namespace BankingSystem.Customers
 
                 else
                 {
-                    Console.SetCursorPosition(57, 19);
+                    Console.SetCursorPosition(57, 16);
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("Please enter Valid Email !!");
                     Thread.Sleep(2000);
@@ -112,9 +116,10 @@ namespace BankingSystem.Customers
                 while (true)
                 {
                     Console.SetCursorPosition(57, 19);
-                    password = Console.ReadLine();
-                    Console.SetCursorPosition(57, 19);
-                    Console.WriteLine(new string('*', password.Length));
+                    password = Utils.OnlyStringInputHidden();
+                    // password = Console.ReadLine();
+                    //Console.SetCursorPosition(57, 19);
+                    //Console.WriteLine(new string('*', password.Length));
                     if (password.Length == 0 || password.Length < 8)
                     {
                         Console.SetCursorPosition(57, 19);

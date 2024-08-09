@@ -1,38 +1,38 @@
-﻿using Newtonsoft.Json;
+﻿using BankingSystem.Administrator;
+using BankingSystem.Models;
+using Newtonsoft.Json;
 
 namespace BankingSystem.Customers;
 public class Customer
 {
-    public class Users
-    {
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public bool IsNewUser { get; set; }
-        public int Pin { get; set; }
-        public long AccountNumber { get; set; }
-        public long BankBalance { get; set; }
-        public List<TransactionHistory> transactionHistories { get; set; }
-    }
+    //public class Users
+    //{
+    //    public string Name { get; set; }
+    //    public string Email { get; set; }
+    //    public string Password { get; set; }
+    //    public bool IsNewUser { get; set; }
+    //    public int Pin { get; set; }
+    //    public long AccountNumber { get; set; }
+    //    public long BankBalance { get; set; }
+    //    public List<TransactionHistory> transactionHistories { get; set; }
+    //}
 
-    public class TransactionHistory
-    {
-        public string TransactionId { get; set; } = string.Empty;
-        public string TransactionType { get; set; }
-        public long TransactionAmount { get; set; }
-        public string TransactionDate { get; set; }
-        public string AccountHolderName { get; set; }
-        public long AccountNumber { get; set; }
+    //public class TransactionHistory
+    //{
+    //    public string TransactionId { get; set; } = string.Empty;
+    //    public string TransactionType { get; set; }
+    //    public long TransactionAmount { get; set; }
+    //    public string TransactionDate { get; set; }
+    //    public string AccountHolderName { get; set; }
+    //    public long AccountNumber { get; set; }
 
-    }
+    //}
 
     public static void AdminLogin()
     {
         Console.Clear();
         Utils.NavBar();
-
-        Console.WriteLine("Service ...");
-        Console.Write("Press Enter to Continue");
+        Admin.AdminMainMenu();
         Console.ReadLine();
     }
 
@@ -89,25 +89,56 @@ public class Customer
         Console.WriteLine("\t\t\t\t\t\t\t\t     --------\n");
         Console.WriteLine($"\t\t\t\t\t\t\t\t\t\t\t\t\t\t       Balance : {jsonObj[index].BankBalance}\n");
         Utils.boxMaker2(40, 55, "Withdraw Amount ");
+
+
+        Console.SetCursorPosition(0, 21);
+        Utils.button(20, 65, "    withdraw");
+
         Console.CursorVisible = true;
+
         Console.SetCursorPosition(56, 15);
         int withdrawAmount = Utils.OnlyIntegerInput();
-
-        if (jsonObj[index].BankBalance < withdrawAmount)
+        Console.CursorVisible = false;
+        if (withdrawAmount == -1)
         {
-            Console.SetCursorPosition(56, 18);
-            Console.WriteLine(" Insufficent Balance");
+            return;
         }
-        else
+
+        Console.SetCursorPosition(0, 21);
+        Console.ForegroundColor = ConsoleColor.Green;
+        Utils.button(20, 65, "    withdraw");
+        Console.ResetColor();
+
+        ConsoleKeyInfo key = Console.ReadKey();
+        if (key.Key == ConsoleKey.Enter)
         {
-            jsonObj[index]["BankBalance"] -= withdrawAmount;
-            Console.SetCursorPosition(56, 18);
-            Console.WriteLine($"Rs. {withdrawAmount} Amount Withdrawed");
+            if (jsonObj[index].BankBalance < withdrawAmount)
+            {
+                Console.SetCursorPosition(61, 18);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(" Insufficent Balance");
+                Thread.Sleep(1500);
+                Console.ResetColor();
+            }
+            else
+            {
+                jsonObj[index]["BankBalance"] -= withdrawAmount;
+                Console.SetCursorPosition(61, 18);
+                Console.WriteLine($"Rs. {withdrawAmount} Withdrawed");
+            }
+        }
+        else if (key.Key == ConsoleKey.Escape)
+        {
+            Console.Clear();
+            Utils.NavBar();
+            return;
         }
 
         string output = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
         File.WriteAllText("users.json", output);
         Console.ReadLine();
+        Console.Clear();
+        Utils.NavBar();
         return;
 
     }
@@ -133,28 +164,30 @@ public class Customer
         Console.WriteLine($"\t\t\t\t\t\t\t\t\t\t\t\t\t\t       Balance : {jsonObj[index].BankBalance}\n");
 
         Utils.boxMaker2(40, 55, "Deposite Amount ");
-        Console.WriteLine("Press escape to go to Main Menu and TAB to continue");
-        ConsoleKeyInfo key = Console.ReadKey();
-        if (key.Key == ConsoleKey.Escape)
+
+        Console.CursorVisible = true;
+        Console.SetCursorPosition(56, 15);
+        int depositeAmount = Utils.OnlyIntegerInput();
+        if (depositeAmount == -1)
         {
             return;
         }
-        else if (key.Key == ConsoleKey.Tab || key.Key == ConsoleKey.Enter)
-        {
-            Console.CursorVisible = true;
-            Console.SetCursorPosition(56, 15);
-            int depositeAmount = Utils.OnlyIntegerInput();
 
-            jsonObj[index]["BankBalance"] += depositeAmount;
-            Console.SetCursorPosition(56, 18);
-            Console.WriteLine($"Rs. {depositeAmount} Amount Deposited");
+        jsonObj[index]["BankBalance"] += depositeAmount;
+        Console.SetCursorPosition(56, 18);
+        Console.WriteLine($"Rs. {depositeAmount} Amount Deposited");
 
 
-            string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
-            File.WriteAllText("users.json", output);
-        }
+        string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
+        File.WriteAllText("users.json", output);
+
+
+
         Console.ReadLine();
-        Deposit();
+        Console.Clear();
+        Utils.NavBar();
+        return;
+
     }
     public static void TransferMoney()
     {
@@ -186,12 +219,7 @@ public class Customer
         Utils.boxMaker2(40, 55, "Amount");
 
         Console.CursorVisible = true;
-        Console.WriteLine("\n\n\t\t\t\t\t\t Press escape to go to Main Menu and Enter to continue.");
-        //ConsoleKeyInfo key = Console.ReadKey();
-        //if (key.Key == ConsoleKey.Escape)
-        //{
-        //    return;
-        //}
+
         int accountNumber;
         int reenterAccountNumber;
         int amount = 0;
@@ -201,10 +229,17 @@ public class Customer
             {
                 Console.SetCursorPosition(57, 16);
                 accountNumber = Utils.OnlyIntegerInputHidden();
+                if (accountNumber == -1)
+                {
+                    return;
+                }
                 Console.SetCursorPosition(57, 21);
                 reenterAccountNumber = Utils.OnlyIntegerInput();
-
-                if (accountNumber != reenterAccountNumber)
+                if (reenterAccountNumber == -1)
+                {
+                    return;
+                }
+                else if (accountNumber != reenterAccountNumber)
                 {
                     string msgAccNumber = "Account Number does not match !!";
 
@@ -224,6 +259,10 @@ public class Customer
                 }
                 Console.SetCursorPosition(57, 26);
                 amount = Utils.OnlyIntegerInput();
+                if (amount == -1)
+                {
+                    return;
+                }
             } while (accountNumber != reenterAccountNumber);
 
 
@@ -347,13 +386,34 @@ public class Customer
             Utils.HistoryBar(userTransaction[i].TransactionId, userTransaction[i].TransactionType, Convert.ToString(userTransaction[i].TransactionAmount), userTransaction[i].TransactionDate, userTransaction[i].AccountHolderName, Convert.ToString(userTransaction[i].AccountNumber));
         }
 
+        Console.SetCursorPosition(0, 0);
+        Console.CursorVisible = false;
+
+        int keyPressed = Utils.OnlyIntegerInputHiddenInput();
+        if (keyPressed == -1)
+        {
+            Console.Clear();
+            Utils.NavBar();
+            return;
+        }
 
 
-        Console.ReadLine();
+        Console.Clear();
+        Utils.NavBar();
+    }
+
+    public static void Logout()
+    {
+        Utils.whoIsLoggedIn = "";
+        Utils.LoggedUserName = "";
+        Console.ResetColor();
+        Utils.NavBar();
+        Program.MainMenu();
+
     }
     public static void Menu()
     {
-        string[] mainMenuOption = new string[] { "\n\t\t\t\t\t\t\t     1. Withdraw Money", "\n\t\t\t\t\t\t\t     2. Deposite Money", "\n\t\t\t\t\t\t\t     3. Transfer Money", "\n\t\t\t\t\t\t\t     4. Passbook", "\n\t\t\t\t\t\t\t     5. Exit" };
+        string[] mainMenuOption = new string[] { "\n\t\t\t\t\t\t\t     1. Withdraw Money", "\n\t\t\t\t\t\t\t     2. Deposite Money", "\n\t\t\t\t\t\t\t     3. Transfer Money", "\n\t\t\t\t\t\t\t     4. Passbook", "\n\t\t\t\t\t\t\t     5. Logout" };
         int menuSelector = 0;
         bool done = false;
 
@@ -411,25 +471,31 @@ public class Customer
                     case 0:
                         Console.Clear();
                         Withdraw();
-                        //Console.Clear();
+                        Console.Clear();
+                        Utils.NavBar();
                         break;
                     case 1:
                         Console.Clear();
                         Deposit();
+                        Console.Clear();
+                        Utils.NavBar();
                         break;
                     case 2:
                         Console.Clear();
                         TransferMoney();
                         Console.Clear();
-
+                        Utils.NavBar();
                         break;
 
                     case 3:
                         Console.Clear();
                         Passbook();
+                        Console.Clear();
+                        Utils.NavBar();
                         break;
                     case 4:
-                        done = true;
+                        Console.Clear();
+                        Logout();
                         break;
                     default:
                         Console.WriteLine("oops something went wrong");

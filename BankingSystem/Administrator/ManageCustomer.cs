@@ -1,23 +1,49 @@
-﻿using BankingSystem.Customers;
-namespace BankingSystem
+﻿namespace BankingSystem.Administrator
 {
-    internal class Program
+    public class ManageCustomer
     {
-
-        //Main Menu
-        public static void MainMenu()
+        public static void CreateNewUser()
         {
-            string[] mainMenuOption = new string[] { "\n\t\t\t\t\t\t\t     1. Login", "\n\t\t\t\t\t\t\t     2. SignUp", "\n\t\t\t\t\t\t\t     3. Admin Login", "\n\t\t\t\t\t\t\t     4. Exit" };
+
+        }
+        public static void DeleteUser()
+        {
+
+        }
+
+        public static void UpdateUser()
+        {
+
+        }
+
+        public static void ResetUserPassword()
+        {
+
+        }
+
+
+        public static void ManageUsers()
+        {
+            /* Manage Users
+
+                View All Users: Display a list of all users, including their usernames and account statuses.
+                Create New User: Add a new user to the system. This may involve entering user details such as username, password, and account information.
+                Delete User: Remove a user from the system. Ensure that associated accounts and data are handled appropriately.
+                Update User Information: Modify existing user details, including personal information and account settings.
+                Reset User Password: Allow admins to reset a user's password, often sending a temporary password or initiating a password reset process.
+            */
+
+            string[] mainMenuOption = new string[] { "\n\t\t\t\t\t\t\t     1. Create New User", "\n\t\t\t\t\t\t\t     2. Delete User", "\n\t\t\t\t\t\t\t     3. Update User", "\n\t\t\t\t\t\t\t     4. Reset User Password" };
             int menuSelector = 0;
             bool done = false;
 
             Console.WriteLine("\t\t\t\t\t\t\t  WelCome to State Bank of Bharat");
-            Console.WriteLine("\n\n\t\t\t\t\t\t\t     Choose a Option to continue");
+            Console.WriteLine("\n\n\t\t\t\t\t     Move UP and Down arrow Key to Navigate through Options.");
             do
             {
                 //Console.Clear();
 
-                // Utils.NavBar();
+                //Utils.NavBar();
                 Console.CursorVisible = false;
 
                 // Paint(61, 13, mainMenuOption, menuSelector);
@@ -35,7 +61,7 @@ namespace BankingSystem
 
                 var keyPressed = Console.ReadKey();
 
-                if ((keyPressed.Key == ConsoleKey.DownArrow || keyPressed.Key == ConsoleKey.Tab))
+                if (keyPressed.Key == ConsoleKey.DownArrow || keyPressed.Key == ConsoleKey.Tab)
                 {
                     if (menuSelector == mainMenuOption.Length - 1)
                     {
@@ -64,21 +90,27 @@ namespace BankingSystem
                     {
                         case 0:
                             Console.Clear();
-
-                            //Customer.Login();
-                            Login.CustomerLogin("Customer");
+                            CreateNewUser();
                             Console.Clear();
                             Utils.NavBar();
                             break;
                         case 1:
                             Console.Clear();
-                            Signup.CustomerSignup();
+                            DeleteUser();
+                            Console.Clear();
+                            Utils.NavBar();
                             break;
                         case 2:
-                            Customer.AdminLogin();
+                            Console.Clear();
+                            UpdateUser();
+                            Console.Clear();
+                            Utils.NavBar();
                             break;
+
+
                         case 3:
-                            done = true;
+                            Console.Clear();
+                            ResetUserPassword();
                             break;
                         default:
                             Console.WriteLine("oops something went wrong");
@@ -87,27 +119,5 @@ namespace BankingSystem
                 }
             } while (!done);
         }
-
-        //Main Method
-        static void Main(string[] args)
-        {
-            Console.Title = "State Bank Of Bharat";
-            Utils.NavBar();
-            // Utils.NavBar2();
-            MainMenu();
-            // Customer.CustomerMainMenu();
-            // testing development of customer menu
-            // Customer.CustomerMainMenu();
-
-
-            Console.ReadLine();
-
-        }
     }
 }
-
-// add history when withdrawing or depositing.
-// set transaction id automatically.
-// use hash for password.
-// use regex for email verification.
-// add login button on signup.

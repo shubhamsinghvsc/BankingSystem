@@ -152,6 +152,7 @@
             Console.WriteLine(line + "\n");
         }
 
+
         // Line 
         public static void LineMaker(int length, int padding)
         {
@@ -189,7 +190,11 @@
             do
             {
                 key = Console.ReadKey(true);
-                if (key.Key != ConsoleKey.Backspace)
+                if (key.Key == ConsoleKey.Escape)
+                {
+                    return -1;
+                }
+                else if (key.Key != ConsoleKey.Backspace)
                 {
                     double val = 0;
                     bool parseSuccesfull = double.TryParse(key.KeyChar.ToString(), out val);
@@ -228,7 +233,11 @@
             do
             {
                 key = Console.ReadKey(true);
-                if (key.Key != ConsoleKey.Backspace)
+                if (key.Key == ConsoleKey.Escape)
+                {
+                    return -1;
+                }
+                else if (key.Key != ConsoleKey.Backspace)
                 {
                     double val = 0;
                     bool parseSuccesfull = double.TryParse(key.KeyChar.ToString(), out val);
@@ -236,6 +245,49 @@
                     {
                         value += key.KeyChar;
                         Console.Write("*");
+                    }
+                }
+                else
+                {
+                    if (key.Key == ConsoleKey.Backspace && value.Length > 0)
+                    {
+                        value = value.Substring(0, (value.Length - 1));
+                        Console.Write("\b \b");
+                    }
+                }
+            }
+            // Stops Receving Keys Once Enter is Pressed
+            while (key.Key != ConsoleKey.Enter);
+            if (value.Length > 0)
+            {
+                return Convert.ToInt32(value);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public static int OnlyIntegerInputHiddenInput()
+        {
+            string value = "";
+            ConsoleKeyInfo key;
+
+            do
+            {
+                key = Console.ReadKey(true);
+                if (key.Key == ConsoleKey.Escape)
+                {
+                    return -1;
+                }
+                else if (key.Key != ConsoleKey.Backspace)
+                {
+                    double val = 0;
+                    bool parseSuccesfull = double.TryParse(key.KeyChar.ToString(), out val);
+                    if (parseSuccesfull)
+                    {
+                        value += key.KeyChar;
+                        Console.Write(" ");
                     }
                 }
                 else
@@ -271,6 +323,115 @@
 
 
         }
+
+        //public static string OnlyStringInput()
+        //{
+        //    string value = "";
+        //    string empty = "";
+        //    ConsoleKeyInfo key;
+
+        //    do
+        //    {
+        //        key = Console.ReadKey(true);
+        //        if (key.Key == ConsoleKey.Escape)
+        //        {
+        //            return null;
+        //        }
+        //        else if (key.Key != ConsoleKey.Backspace)
+        //        {
+        //            value = value + Convert.ToString(key.KeyChar);
+        //            Console.Write(key.KeyChar);
+        //        }
+        //        else
+        //        {
+        //            if (key.Key == ConsoleKey.Backspace && value.Length > 0)
+        //            {
+        //                value = value.Substring(0, (value.Length - 1));
+        //                Console.Write("\b \b");
+        //            }
+        //        }
+        //    }
+
+        //    while (key.Key != ConsoleKey.Enter);
+
+        //    if (value.Length > 0)
+        //    {
+        //        return value;
+        //    }
+        //    else
+        //    {
+        //        return empty;
+        //    }
+        //}
+
+        public static string OnlyStringInput()
+        {
+            string value = "";
+            ConsoleKeyInfo key;
+
+            do
+            {
+                key = Console.ReadKey(true);
+
+                if (key.Key == ConsoleKey.Escape)
+                {
+                    return null;
+                }
+                else if (key.Key == ConsoleKey.Backspace)
+                {
+                    if (value.Length > 0)
+                    {
+                        value = value.Substring(0, value.Length - 1);
+                        Console.Write("\b \b");
+                    }
+                }
+                else if (key.Key == ConsoleKey.Enter)
+                {
+                    return value;
+                }
+                else
+                {
+                    value += key.KeyChar;
+                    Console.Write(key.KeyChar);
+                }
+            }
+            while (true);
+        }
+
+        public static string OnlyStringInputHidden()
+        {
+            string value = "";
+            ConsoleKeyInfo key;
+
+            do
+            {
+                key = Console.ReadKey(true);
+
+                if (key.Key == ConsoleKey.Escape)
+                {
+                    return null;
+                }
+                else if (key.Key == ConsoleKey.Backspace)
+                {
+                    if (value.Length > 0)
+                    {
+                        value = value.Substring(0, value.Length - 1);
+                        Console.Write("\b \b");
+                    }
+                }
+                else if (key.Key == ConsoleKey.Enter)
+                {
+                    return value;
+                }
+                else
+                {
+                    value += key.KeyChar;
+                    Console.Write("*");
+                }
+            }
+            while (true);
+        }
+
 
         public static void MiddleBar(string firstItemKey, string firstItemValue, string secondItemKey, string secondItemValue, int padding, int boxSize)
         {
@@ -319,5 +480,36 @@
 
 
         }
+
+        public static void DisplayBox(string firstItemKey, string firstItemValue, string secondItemKey, string secondItemValue, int padding, int boxSize)
+        {
+            //int boxSize = 112;
+            //int padding = 18;
+            string line = "";
+            for (int i = 0; i < boxSize; i++)
+            {
+                line += "-";
+            }
+            line = line.PadLeft(boxSize + padding, ' ');
+
+            string firstItem = "";
+            string middleItem = "";
+            string lastItem = "";
+
+            firstItem = $"| {firstItemKey}: {firstItemValue}";
+            firstItem = firstItem.PadLeft(firstItem.Length + padding);
+            lastItem = $"{secondItemKey}: {secondItemValue} |";
+            int size = ((boxSize + padding) - (firstItem.Length + lastItem.Length));
+
+            for (int i = 0; i < size; i++)
+            {
+                middleItem += " ";
+            }
+            Console.WriteLine(line);
+            Console.WriteLine(firstItem + middleItem + lastItem);
+            Console.WriteLine(line);
+
+        }
+
     }
 }

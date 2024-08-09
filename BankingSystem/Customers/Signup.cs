@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using static BankingSystem.Customers.Customer;
+﻿using BankingSystem.Models;
+using Newtonsoft.Json;
 
 namespace BankingSystem.Customers
 {
