@@ -1,4 +1,5 @@
-﻿using BankingSystem.Customers;
+﻿using BankingSystem.Administrator;
+using BankingSystem.Customers;
 namespace BankingSystem
 {
     internal class Program
@@ -98,7 +99,8 @@ namespace BankingSystem
             Console.Title = "State Bank Of Bharat";
             Utils.NavBar();
             // Utils.NavBar2();
-            MainMenu();
+            // MainMenu();
+            Admin.ViewStats();
             // ManageUsers.DeleteUser();
             // Customer.CustomerMainMenu();
             // testing development of customer menu

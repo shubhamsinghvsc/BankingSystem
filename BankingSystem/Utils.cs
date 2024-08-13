@@ -11,7 +11,7 @@ namespace BankingSystem
         public static String whoIsLoggedIn = "";
         public static String LoggedUserName = "";
 
-        public static string filePath = "user.json";
+        public static string filePath = "users.json";
         public static List<Users> LoadUsers()
         {
             if (!File.Exists(filePath))

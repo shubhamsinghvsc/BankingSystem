@@ -144,13 +144,38 @@ namespace BankingSystem.Administrator
 
         public static void ViewStats()
         {
-            /* System Statistics
 
-                View Total Number of Users: Show the total count of users in the system.
-                View Total Number of Accounts: Display the total count of accounts.
-                View Total Transactions: Provide statistics on the number of transactions that have occurred.
-                View Total Balance: Display the aggregate balance of all accounts or specific account types.
-            */
+            Console.Clear();
+            Utils.NavBar();
+            Utils.HeadingUnderlined("Statistics", 68);
+            Utils.boxMaker2(40, 55, "Total Number of User ");
+            Utils.boxMaker2(40, 55, "Total Transaction");
+            Utils.boxMaker2(40, 55, "Total Balance");
+
+            int totalNumberOfUsers = 0;
+            long totalTransaction = 0;
+            long totalBalance = 0;
+
+            List<Users> users = Utils.LoadUsers();
+            // total number of users.
+            totalNumberOfUsers = users.Count;
+
+            // total number of transactions and Total Balance.
+            foreach (Users user in users)
+            {
+                totalTransaction += user.transactionHistories.Count;
+                totalBalance += user.BankBalance;
+            }
+
+            Console.SetCursorPosition(57, 15);
+            Console.WriteLine(totalNumberOfUsers);
+
+            Console.SetCursorPosition(57, 20);
+            Console.WriteLine(totalTransaction);
+
+            Console.SetCursorPosition(57, 25);
+            Console.WriteLine(totalBalance);
+
         }
 
         public static void Logout()
