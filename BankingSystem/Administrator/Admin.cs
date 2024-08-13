@@ -1,10 +1,33 @@
-﻿using BankingSystem.Models;
+﻿using BankingSystem.Customers;
+using BankingSystem.Models;
 using Newtonsoft.Json;
 
 namespace BankingSystem.Administrator
 {
     public class Admin
     {
+        public static long gloabalAccountNumber;
+        private const string filePath = "users.json";
+        public static List<Users> LoadUsers()
+        {
+            if (!File.Exists(filePath))
+            {
+                return new List<Users>();
+            }
+            string json = File.ReadAllText(filePath);
+            return JsonConvert.DeserializeObject<List<Users>>(json) ?? new List<Users>();
+        }
+
+        public static void SaveUsers(List<Users> users)
+        {
+            string json = JsonConvert.SerializeObject(users, Formatting.Indented);
+            File.WriteAllText(filePath, json);
+        }
+
+        public static void CreateNewUser()
+        {
+            Signup.CustomerSignup();
+        }
         public static void ViewUsers()
         {
 
@@ -24,6 +47,100 @@ namespace BankingSystem.Administrator
 
             Console.ReadLine();
         }
+        public static void ManageUser()
+        {
+
+            List<Users> users = LoadUsers();
+
+            Console.Clear();
+            Utils.NavBar();
+            Console.WriteLine();
+            Utils.HeadingUnderlined("User Account Number", 65);
+            Utils.boxMaker2(40, 55, "Account Number");
+            Utils.boxMaker2(40, 55, "Confirm Account Number");
+
+            Console.CursorVisible = true;
+
+            int accountNumber;
+            int reenterAccountNumber;
+            int amount = 0;
+            bool accountExist = false;
+            do
+            {
+                do
+                {
+                    Console.SetCursorPosition(57, 16);
+                    accountNumber = Utils.OnlyIntegerInputHidden();
+                    if (accountNumber == -1)
+                    {
+                        return;
+                    }
+                    Console.SetCursorPosition(57, 21);
+                    reenterAccountNumber = Utils.OnlyIntegerInput();
+                    if (reenterAccountNumber == -1)
+                    {
+                        return;
+                    }
+                    else if (accountNumber != reenterAccountNumber)
+                    {
+                        string msgAccNumber = "Account Number does not match !!";
+
+                        Utils.EraseText(10, 57, 16);
+                        Utils.EraseText(10, 57, 21);
+                        Utils.EraseText(10, 57, 26);
+
+                        Console.SetCursorPosition(57, 12);
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine(msgAccNumber);
+                        Thread.Sleep(1500);
+                        Utils.EraseText(msgAccNumber.Length, 57, 12);
+                        Console.ResetColor();
+
+                        continue;
+
+                    }
+                    Console.SetCursorPosition(57, 26);
+                    amount = Utils.OnlyIntegerInput();
+                    if (amount == -1)
+                    {
+                        return;
+                    }
+                } while (accountNumber != reenterAccountNumber);
+
+
+                Users user = users.FirstOrDefault(user => user.AccountNumber == accountNumber);
+
+
+                if (user == null)
+                {
+                    Utils.EraseText(10, 57, 16);
+                    Utils.EraseText(10, 57, 21);
+                    Utils.EraseText(10, 57, 26);
+
+                    string msgAccNumber = "!! Account Number Does Not Exist. !!";
+                    Console.SetCursorPosition(57, 12);
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(msgAccNumber);
+                    Thread.Sleep(1500);
+                    Utils.EraseText(msgAccNumber.Length, 57, 12);
+                    Console.ResetColor();
+
+                }
+
+                else
+                {
+                    accountExist = true;
+                    gloabalAccountNumber = user.AccountNumber;
+                    Console.Clear();
+                    Utils.NavBar();
+                    ManageUsers.ManageUserMenu();
+                }
+            } while (!accountExist);
+
+
+            ManageUsers.ManageUserMenu();
+            Console.ReadLine();
+        }
 
         public static void ViewStats()
         {
@@ -38,11 +155,11 @@ namespace BankingSystem.Administrator
 
         public static void Logout()
         {
-
+            Program.MainMenu();
         }
         public static void Menu()
         {
-            string[] mainMenuOption = new string[] { "\n\t\t\t\t\t\t\t     1. View Users", "\n\t\t\t\t\t\t\t     2. Manage Users", "\n\t\t\t\t\t\t\t     3. View Status", "\n\t\t\t\t\t\t\t     4. Logout" };
+            string[] mainMenuOption = new string[] { "\n\t\t\t\t\t\t\t     1. Create New User", "\n\t\t\t\t\t\t\t     2. View Users", "\n\t\t\t\t\t\t\t     3. Manage Users", "\n\t\t\t\t\t\t\t     4. View Status", "\n\t\t\t\t\t\t\t     4. Logout" };
             int menuSelector = 0;
             bool done = false;
 
@@ -99,17 +216,24 @@ namespace BankingSystem.Administrator
                     {
                         case 0:
                             Console.Clear();
+                            CreateNewUser();
+                            Console.Clear();
+                            Utils.NavBar();
+                            break;
+
+                        case 1:
+                            Console.Clear();
                             ViewUsers();
                             Console.Clear();
                             Utils.NavBar();
                             break;
-                        case 1:
+                        case 2:
                             Console.Clear();
-                            ManageCustomer.ManageUsers();
+                            ManageUser();
                             Console.Clear();
                             Utils.NavBar();
                             break;
-                        case 2:
+                        case 3:
                             Console.Clear();
                             ViewStats();
                             Console.Clear();
@@ -117,7 +241,7 @@ namespace BankingSystem.Administrator
                             break;
 
 
-                        case 3:
+                        case 4:
                             Console.Clear();
                             Logout();
                             break;

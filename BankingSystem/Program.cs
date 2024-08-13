@@ -73,9 +73,13 @@ namespace BankingSystem
                         case 1:
                             Console.Clear();
                             Signup.CustomerSignup();
+                            Console.Clear();
+                            Utils.NavBar();
                             break;
                         case 2:
                             Customer.AdminLogin();
+                            Console.Clear();
+                            Utils.NavBar();
                             break;
                         case 3:
                             done = true;
@@ -95,6 +99,7 @@ namespace BankingSystem
             Utils.NavBar();
             // Utils.NavBar2();
             MainMenu();
+            // ManageUsers.DeleteUser();
             // Customer.CustomerMainMenu();
             // testing development of customer menu
             // Customer.CustomerMainMenu();
@@ -106,8 +111,11 @@ namespace BankingSystem
     }
 }
 
-// add history when withdrawing or depositing.
-// set transaction id automatically.
-// use hash for password.
-// use regex for email verification.
-// add login button on signup.
+// To-Do
+
+// Add transaction history for withdrawals and deposits.
+// Automatically generate transaction IDs.
+// Secure passwords using hashing.
+// Validate emails using regular expressions.
+// Include a login button on the signup page.
+// Ensure input length is properly handled.

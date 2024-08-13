@@ -1,13 +1,77 @@
-﻿namespace BankingSystem
+﻿using BankingSystem.Models;
+using Newtonsoft.Json;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.RegularExpressions;
+
+namespace BankingSystem
 {
     public class Utils
     {
         public static String whoIsLoggedIn = "";
         public static String LoggedUserName = "";
 
+        public static string filePath = "user.json";
+        public static List<Users> LoadUsers()
+        {
+            if (!File.Exists(filePath))
+            {
+                return new List<Users>();
+            }
+            string json = File.ReadAllText(filePath);
+            return JsonConvert.DeserializeObject<List<Users>>(json) ?? new List<Users>();
+        }
+
+        public static void SaveUsers(List<Users> users)
+        {
+            string json = JsonConvert.SerializeObject(users, Formatting.Indented);
+            File.WriteAllText(filePath, json);
+        }
+        public static void DisplayError(int cordinateX, int cordinateY, string message, int sleepDuration = 1500)
+        {
+            Console.SetCursorPosition(cordinateX, cordinateY);
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(message);
+            Console.ResetColor();
+            Thread.Sleep(sleepDuration);
+            Console.SetCursorPosition(cordinateX, cordinateY);
+            Console.Write(new string(' ', message.Length));
+        }
+        public static void DisplaySuccess(int cordinateX, int cordinateY, string message, int sleepDuration = 1500)
+        {
+            Console.SetCursorPosition(cordinateX, cordinateY);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(message);
+            Console.ResetColor();
+            Thread.Sleep(sleepDuration);
+            Console.SetCursorPosition(cordinateX, cordinateY);
+            Console.Write(new string(' ', message.Length));
+        }
+
+        public static bool IsEmailExist(List<Users> users, string email)
+        {
+            return users.Any(user => user.Email == email);
+        }
+
+        public static bool IsValidEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return false;
+            }
+            try
+            {
+                email = email.ToLower();
+                string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+                return Regex.IsMatch(email, emailPattern, RegexOptions.IgnoreCase);
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
         // NavBar
-
         public static void NavBar2()
         {
             DateTime dateTime = DateTime.Now;
@@ -32,7 +96,6 @@
             }
             line = line.PadLeft(padding + boxSize, ' ');
 
-
             string bankName = "State Bank of Bharat";
             DateTime dateTime = DateTime.Now;
             string userName = "shubham";
@@ -55,7 +118,6 @@
             }
             secondLine = secondLine + middlespace + username;
 
-
             string title = "";
 
             title += paddingLine + "|";
@@ -73,8 +135,6 @@
 
             title += (bankName.Length % 2 == 0 ? " |" : "|");
 
-
-
             Console.WriteLine("\n");
             Console.WriteLine(line);
             Console.WriteLine(title);
@@ -82,7 +142,6 @@
             Console.WriteLine(line);
             Console.WriteLine("\n");
         }
-
         // Input Box 1
         public static void boxMaker(int boxSize, int leftPadding, string label)
         {
@@ -117,14 +176,12 @@
             }
             line = line.PadLeft(boxSize + leftPadding, ' ');
 
-
             label = label.PadLeft(leftPadding + label.Length, ' ');
             label = label.PadRight((label.Length) + (boxSize + leftPadding - label.Length - 1), ' ');
 
             String input = "|";
             input = input.PadLeft(leftPadding + 1, ' ');
             input = input.PadRight(input.Length + boxSize - 2, ' ') + "|";
-
 
             Console.WriteLine(label);
             Console.WriteLine(line);
@@ -145,7 +202,6 @@
             label = "| " + label;
             label = label.PadLeft(leftPadding + label.Length, ' ');
             label = label.PadRight((label.Length) + (boxSize + leftPadding - label.Length - 1), ' ') + "|";
-
 
             Console.WriteLine(line);
             Console.WriteLine(label);
@@ -224,7 +280,6 @@
                 return 0;
             }
         }
-
         public static int OnlyIntegerInputHidden()
         {
             string value = "";
@@ -311,58 +366,18 @@
             }
         }
 
-        public static void EraseText(int size, int x, int y)
+        public static void EraseText(int textSize, int cursorPositionX, int cursorPositionY)
         {
             string line = " ";
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < textSize; i++)
             {
                 line += " ";
             }
-            Console.SetCursorPosition(x, y);
+            Console.SetCursorPosition(cursorPositionX, cursorPositionY);
             Console.WriteLine(line);
 
 
         }
-
-        //public static string OnlyStringInput()
-        //{
-        //    string value = "";
-        //    string empty = "";
-        //    ConsoleKeyInfo key;
-
-        //    do
-        //    {
-        //        key = Console.ReadKey(true);
-        //        if (key.Key == ConsoleKey.Escape)
-        //        {
-        //            return null;
-        //        }
-        //        else if (key.Key != ConsoleKey.Backspace)
-        //        {
-        //            value = value + Convert.ToString(key.KeyChar);
-        //            Console.Write(key.KeyChar);
-        //        }
-        //        else
-        //        {
-        //            if (key.Key == ConsoleKey.Backspace && value.Length > 0)
-        //            {
-        //                value = value.Substring(0, (value.Length - 1));
-        //                Console.Write("\b \b");
-        //            }
-        //        }
-        //    }
-
-        //    while (key.Key != ConsoleKey.Enter);
-
-        //    if (value.Length > 0)
-        //    {
-        //        return value;
-        //    }
-        //    else
-        //    {
-        //        return empty;
-        //    }
-        //}
 
         public static string OnlyStringInput()
         {
@@ -397,7 +412,6 @@
             }
             while (true);
         }
-
         public static string OnlyStringInputHidden()
         {
             string value = "";
@@ -431,11 +445,8 @@
             }
             while (true);
         }
-
-
         public static void MiddleBar(string firstItemKey, string firstItemValue, string secondItemKey, string secondItemValue, int padding, int boxSize)
         {
-
             string firstItem = "";
             string middleItem = "";
             string lastItem = "";
@@ -450,17 +461,9 @@
                 middleItem += " ";
             }
             Console.WriteLine(firstItem + middleItem + lastItem);
-
         }
         public static void HistoryBar(string Tid, string Ttype, string Tamount, string Tdate, string name, string AcNumber)
         {
-            //Console.WriteLine("-----------------------------------------------------------------------------------------------------------------");
-            //Console.WriteLine("|Name: Shubham Singh                                                                           Date: 08-28-2024 |");
-            //Console.WriteLine("|Account Number                                                                                   Amount:789456 |");
-            //Console.WriteLine("|Transaction id :fsdffasf97644sfsdf                                                                          CR |");
-            //Console.WriteLine("-----------------------------------------------------------------------------------------------------------------");
-
-            //Console.WriteLine("\n\n");
             int boxSize = 112;
             int padding = 18;
             string line = "";
@@ -470,18 +473,16 @@
             }
             line = line.PadLeft(boxSize + padding, ' ');
 
-
             Console.WriteLine(line);
             MiddleBar("Name", name, "Date", Tdate, padding, boxSize);
             MiddleBar("A/c Number", AcNumber, "Amount", Tamount, padding, boxSize);
             MiddleBar("Transaction Id", Tid, "", Ttype, padding, boxSize);
             Console.WriteLine(line);
-
-
-
         }
 
-        public static void DisplayBox(string firstItemKey, string firstItemValue, string secondItemKey, string secondItemValue, int padding, int boxSize)
+        public static void DisplayBox(
+            string firstItemKey, string firstItemValue, string secondItemKey, string secondItemValue,
+            int padding, int boxSize)
         {
             //int boxSize = 112;
             //int padding = 18;
@@ -509,6 +510,23 @@
             Console.WriteLine(firstItem + middleItem + lastItem);
             Console.WriteLine(line);
 
+        }
+
+        public static string HashPassword(string password)
+        {
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                // Convert the input string to a byte array and compute the hash
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
+
+                // Convert the byte array to a string
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                return builder.ToString();
+            }
         }
 
     }

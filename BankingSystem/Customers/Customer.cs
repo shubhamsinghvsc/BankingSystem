@@ -1,12 +1,9 @@
 ﻿using BankingSystem.Administrator;
 using BankingSystem.Models;
-using Newtonsoft.Json;
 
 namespace BankingSystem.Customers;
 public class Customer
 {
-    private const string filePath = "users.json";
-
     public static void AdminLogin()
     {
         Console.Clear();
@@ -22,54 +19,16 @@ public class Customer
         Console.Write("Press Enter to Continue");
         Console.ReadLine();
     }
-    private static bool IsEmailExist(List<Users> users, string email)
-    {
-        //foreach (Users user1 in users)
-        //{
-        //    if (user1.Email == email)
-        //    {
-        //        return true;
-        //    }
-        //}
-        //return false;
-        return users.Any(user => user.Email == email);
-    }
 
     private static bool IsPasswordMatched(List<Users> users, string password)
     {
-        //foreach (Users user1 in users)
-        //{
-        //    if (user1.Password == password)
-        //    {
-        //        return true;
-        //    }
-        //}
-        //return false;
         return users.Any(user => user.Password == password);
     }
 
-    private static List<Users> LoadUsers()
-    {
-        if (!File.Exists(filePath))
-        {
-            return new List<Users>();
-        }
-        string json = File.ReadAllText(filePath);
-        return JsonConvert.DeserializeObject<List<Users>>(json) ?? new List<Users>();
-    }
-
-    private static void SaveUsers(List<Users> users)
-    {
-        string json = JsonConvert.SerializeObject(users, Formatting.Indented);
-        File.WriteAllText(filePath, json);
-    }
     public static void Withdraw()
     {
-        //string jsonString = File.ReadAllText(@"C:\Users\VSOFT\source\repos\BankingSystem\BankingSystem\bin\Debug\net8.0\users.json");
-        // string json = File.ReadAllText("users.json");
-        // dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
 
-        List<Users> users = LoadUsers();
+        List<Users> users = Utils.LoadUsers();
         var user = users.FirstOrDefault(user => user.Email == Utils.whoIsLoggedIn);
 
         if (user == null)
@@ -79,11 +38,10 @@ public class Customer
 
         Console.Clear();
         Utils.NavBar();
-        Console.WriteLine("\t\t\t\t\t\t\t\t     WITHDRAW");
-        Console.WriteLine("\t\t\t\t\t\t\t\t     --------\n");
+
+        Utils.HeadingUnderlined("Withdraw Money", 65);
         Console.WriteLine($"\t\t\t\t\t\t\t\t\t\t\t\t\t\t       Balance : {user.BankBalance}\n");
         Utils.boxMaker2(40, 55, "Withdraw Amount ");
-
 
         Console.SetCursorPosition(0, 21);
         Utils.button(20, 65, "    withdraw");
@@ -109,17 +67,25 @@ public class Customer
         {
             if (user.BankBalance < withdrawAmount)
             {
-                Console.SetCursorPosition(61, 18);
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(" Insufficent Balance");
-                Thread.Sleep(1500);
-                Console.ResetColor();
+                string msg = "!! Insufficent Balance !!";
+                Utils.DisplayError(61, 18, msg, 2000);
             }
             else
             {
                 user.BankBalance -= withdrawAmount;
                 Console.SetCursorPosition(61, 18);
                 Console.WriteLine($"Rs. {withdrawAmount} Withdrawed");
+                user.transactionHistories.Add(
+                    new TransactionHistory()
+                    {
+                        TransactionId = Guid.NewGuid().ToString("N"),
+                        TransactionType = "CR",
+                        TransactionAmount = withdrawAmount,
+                        TransactionDate = DateTime.Now.ToString(),
+                        AccountHolderName = user.Name,
+                        AccountNumber = user.AccountNumber,
+                    });
+
             }
         }
         else if (key.Key == ConsoleKey.Escape)
@@ -129,7 +95,7 @@ public class Customer
             return;
         }
 
-        SaveUsers(users);
+        Utils.SaveUsers(users);
 
         Console.ReadLine();
         Console.Clear();
@@ -139,18 +105,18 @@ public class Customer
     }
     public static void Deposit()
     {
-        List<Users> users = LoadUsers();
+        List<Users> users = Utils.LoadUsers();
         var user = users.FirstOrDefault(user => user.Email == Utils.whoIsLoggedIn);
         if (user == null) return;
 
 
         Console.Clear();
         Utils.NavBar();
-        Console.WriteLine("\t\t\t\t\t\t\t\t     Deposite");
-        Console.WriteLine("\t\t\t\t\t\t\t\t     --------\n");
+
+        Utils.HeadingUnderlined("Deposite Money", 65);
         Console.WriteLine($"\t\t\t\t\t\t\t\t\t\t\t\t\t\t       Balance : {user.BankBalance}\n");
 
-        Utils.boxMaker2(40, 55, "Deposite Amount ");
+        Utils.boxMaker2(40, 55, "  Deposite Amount ");
 
         Console.CursorVisible = true;
         Console.SetCursorPosition(56, 15);
@@ -163,9 +129,18 @@ public class Customer
         user.BankBalance += depositeAmount;
         Console.SetCursorPosition(56, 18);
         Console.WriteLine($"Rs. {depositeAmount} Amount Deposited");
+        user.transactionHistories.Add(
+                    new TransactionHistory()
+                    {
+                        TransactionId = Guid.NewGuid().ToString("N"),
+                        TransactionType = "DR",
+                        TransactionAmount = depositeAmount,
+                        TransactionDate = DateTime.Now.ToString(),
+                        AccountHolderName = user.Name,
+                        AccountNumber = user.AccountNumber,
+                    });
 
-
-        SaveUsers(users);
+        Utils.SaveUsers(users);
 
         Console.ReadLine();
         Console.Clear();
@@ -175,15 +150,13 @@ public class Customer
     }
     public static void TransferMoney()
     {
-        List<Users> users = LoadUsers();
+        List<Users> users = Utils.LoadUsers();
         var sender = users.FirstOrDefault(user => user.Email == Utils.whoIsLoggedIn);
         if (sender == null) return;
 
-
-
         Console.Clear();
         Utils.NavBar();
-        //Console.SetCursorPosition(80, 10);
+
         Console.WriteLine($"\t\t\t\t\t\t\t\t\t\t\t\t\t\t       Balance : {sender.BankBalance}");
         Utils.HeadingUnderlined("Transfer Money", 67);
         Utils.boxMaker2(40, 55, "Account Number");
@@ -220,15 +193,8 @@ public class Customer
                     Utils.EraseText(10, 57, 21);
                     Utils.EraseText(10, 57, 26);
 
-                    Console.SetCursorPosition(57, 12);
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine(msgAccNumber);
-                    Thread.Sleep(1500);
-                    Utils.EraseText(msgAccNumber.Length, 57, 12);
-                    Console.ResetColor();
-
+                    Utils.DisplayError(57, 12, msgAccNumber);
                     continue;
-
                 }
                 Console.SetCursorPosition(57, 26);
                 amount = Utils.OnlyIntegerInput();
@@ -241,7 +207,6 @@ public class Customer
 
             var receiver = users.FirstOrDefault(user => user.AccountNumber == accountNumber);
 
-
             if (receiver == null)
             {
                 Utils.EraseText(10, 57, 16);
@@ -249,13 +214,7 @@ public class Customer
                 Utils.EraseText(10, 57, 26);
 
                 string msgAccNumber = "!! Account Number Does Not Exist. !!";
-                Console.SetCursorPosition(57, 12);
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(msgAccNumber);
-                Thread.Sleep(1500);
-                Utils.EraseText(msgAccNumber.Length, 57, 12);
-                Console.ResetColor();
-
+                Utils.DisplayError(57, 12, msgAccNumber);
             }
 
             else
@@ -267,20 +226,19 @@ public class Customer
                     sender.BankBalance -= amount;
 
                     string msgAccNumber = "Money  Transfered  Successfull";
-                    Console.SetCursorPosition(57, 29);
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine(msgAccNumber);
-                    Thread.Sleep(1500);
-                    Utils.EraseText(msgAccNumber.Length, 57, 29);
-                    Console.ResetColor();
+                    Utils.DisplaySuccess(57, 29, msgAccNumber);
+
                     List<TransactionHistory> senderHistory = new List<TransactionHistory>();
                     List<TransactionHistory> receiverHistory = new List<TransactionHistory>();
+
                     senderHistory = sender.transactionHistories;
                     receiverHistory = receiver.transactionHistories;
+
+                    string transactionUid = Guid.NewGuid().ToString("N");
                     senderHistory.Add(
                         new TransactionHistory()
                         {
-                            TransactionId = "1",
+                            TransactionId = transactionUid,
                             TransactionType = "DR",
                             TransactionAmount = amount,
                             TransactionDate = DateTime.Now.ToString(),
@@ -292,7 +250,7 @@ public class Customer
                     receiverHistory.Add(
                         new TransactionHistory()
                         {
-                            TransactionId = "1",
+                            TransactionId = transactionUid,
                             TransactionType = "CR",
                             TransactionAmount = amount,
                             TransactionDate = DateTime.Now.ToString(),
@@ -307,17 +265,14 @@ public class Customer
                 }
                 else
                 {
-                    Console.SetCursorPosition(70, 30);
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Insufficient Account Balance !!");
-                    Thread.Sleep(1500);
-                    Console.ResetColor();
+                    string msg = "!! Insufficient Account Balance !!";
+                    Utils.DisplayError(70, 30, msg);
                 }
 
             }
         } while (!accountExist);
 
-        SaveUsers(users);
+        Utils.SaveUsers(users);
 
         Console.ReadLine();
     }
@@ -326,7 +281,7 @@ public class Customer
         Utils.NavBar();
         Utils.HeadingUnderlined("Transaction History", 65);
 
-        List<Users> users = LoadUsers();
+        List<Users> users = Utils.LoadUsers();
         var user = users.FirstOrDefault(user => user.Email == Utils.whoIsLoggedIn);
         if (user == null)
         {
@@ -334,6 +289,8 @@ public class Customer
         }
 
         List<TransactionHistory> userTransaction = user.transactionHistories;
+        userTransaction.Reverse();
+
         foreach (TransactionHistory transactionHistory in userTransaction)
         {
             Utils.HistoryBar(
@@ -469,13 +426,5 @@ public class Customer
         Console.Clear();
         Utils.NavBar();
         Menu();
-
-
     }
 }
-
-
-
-
-
-// use REgex

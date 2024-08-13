@@ -6,27 +6,15 @@ namespace BankingSystem.Customers
 {
     public class Login
     {
-        private static bool IsEmailExist(List<Users> user, string email)
-        {
-            foreach (Users user1 in user)
-            {
-                if (user1.Email == email)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
 
-        private static bool IsPasswordMatched(List<Users> user, string password)
+        private static bool IsPasswordMatched(Users user, string password)
         {
-            foreach (Users user1 in user)
+
+            if (user.Password == Utils.HashPassword(password))
             {
-                if (user1.Password == password)
-                {
-                    return true;
-                }
+                return true;
             }
+
             return false;
         }
 
@@ -36,6 +24,7 @@ namespace BankingSystem.Customers
             string email;
             string password;
 
+
             string filePath = "users.json";
             List<Users> users = new List<Users>();
             if (File.Exists(filePath))
@@ -43,6 +32,7 @@ namespace BankingSystem.Customers
                 string text = File.ReadAllText(filePath);
                 users = JsonConvert.DeserializeObject<List<Users>>(text) ?? new List<Users>();
             }
+
 
             Console.Clear();
             Utils.NavBar();
@@ -78,7 +68,7 @@ namespace BankingSystem.Customers
                 else if (email.EndsWith(".com") && email.Contains('@') && !email.StartsWith('@'))
                 {
 
-                    if (!IsEmailExist(users, email))
+                    if (!Utils.IsEmailExist(users, email))
                     {
                         Console.SetCursorPosition(57, 14);
                         Console.ForegroundColor = ConsoleColor.Red;
@@ -111,28 +101,22 @@ namespace BankingSystem.Customers
             //Password
             while (true)
             {
-
                 //password
                 while (true)
                 {
                     Console.SetCursorPosition(57, 19);
                     password = Utils.OnlyStringInputHidden();
-                    // password = Console.ReadLine();
-                    //Console.SetCursorPosition(57, 19);
-                    //Console.WriteLine(new string('*', password.Length));
+
                     if (password.Length == 0 || password.Length < 8)
                     {
-                        Console.SetCursorPosition(57, 19);
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Please Enter Valid Password !!");
-                        Console.ResetColor();
-                        Thread.Sleep(1500);
-                        Console.SetCursorPosition(57, 19);
-                        Console.WriteLine("                              ");
+                        string msg = "!! Please Enter Valid Password !!";
+                        Utils.DisplayError(57, 19, msg);
                     }
                     else
                     {
-                        if (IsPasswordMatched(users, password))
+                        Users user = users.FirstOrDefault(user => user.Email == email);
+
+                        if (IsPasswordMatched(user, password))
                         {
                             Utils.whoIsLoggedIn = email;
                             int index = 0;

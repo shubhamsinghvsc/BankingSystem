@@ -5,17 +5,6 @@ namespace BankingSystem.Customers
 {
     public class Signup
     {
-        private static bool IsEmailExist(List<Users> user, string email)
-        {
-            foreach (Users user1 in user)
-            {
-                if (user1.Email == email)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
         public static void CustomerSignup()
         {
             string name;
@@ -25,9 +14,11 @@ namespace BankingSystem.Customers
 
             Console.Clear();
             Utils.NavBar();
+
             Console.WriteLine("Signup".PadLeft(77, ' '));
             Console.WriteLine("------".PadLeft(77, ' ') + "\n\n");
-            Utils.boxMaker(40, 55, "Name");
+
+            Utils.boxMaker2(40, 55, "Name");
             Utils.boxMaker2(40, 55, "Email");
             Utils.boxMaker2(40, 55, "Password (Minmum 8 Characters)");
             Utils.boxMaker2(40, 55, "Confirm Password");
@@ -36,6 +27,7 @@ namespace BankingSystem.Customers
 
             Console.CursorVisible = true;
 
+            // fetching data from json file and if file does not exist creating new one.
             string filePath = "users.json";
             List<Users> users = new List<Users>();
             if (File.Exists(filePath))
@@ -44,63 +36,51 @@ namespace BankingSystem.Customers
                 users = JsonConvert.DeserializeObject<List<Users>>(text) ?? new List<Users>();
             }
 
-            //Name
+            // Name label and input box.
             while (true)
             {
                 Console.SetCursorPosition(57, 14);
+                name = Utils.OnlyStringInput();
 
-
-                Console.SetCursorPosition(57, 14);
-
-                name = Console.ReadLine();
-                if (name.Length == 0)
+                if (name == null)
                 {
-                    Console.SetCursorPosition(57, 14);
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Please Enter Your Name. !!");
-                    Console.ResetColor();
-                    Thread.Sleep(1500);
-                    Console.SetCursorPosition(57, 14);
-                    Console.WriteLine("                          ");
+                    return;
+                }
+                else if (name.Length == 0)
+                {
+                    string msg = "!! Please Enter Your Name. !!";
+                    Utils.DisplayError(57, 14, msg);
                 }
                 else
                 {
                     break;
                 }
-
-
             }
 
-            //Email
+            //Email label and input box.
             while (true)
             {
                 Console.SetCursorPosition(57, 19);
-                email = Console.ReadLine();
+                email = Utils.OnlyStringInput();
                 email = email.ToLower();
 
-                if (email.Length == 0)
+                if (email == null)
                 {
-                    Console.SetCursorPosition(57, 19);
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Email is a required field!!");
-                    Console.ResetColor();
-                    Thread.Sleep(1500);
-                    Console.SetCursorPosition(57, 19);
-                    Console.WriteLine("                           ");
-
+                    return;
                 }
-                else if (email.EndsWith(".com") && email.Contains('@') && !email.StartsWith('@'))
+                else if (email.Length == 0)
                 {
-                    //Console.WriteLine("helllllllllllllllllllllllllllllllll");
-                    if (IsEmailExist(users, email))
+                    string msg = "!! Email is a required field !!";
+                    Utils.DisplayError(57, 19, msg);
+                }
+                else if (Utils.IsValidEmail(email))
+                {
+                    //Console.WriteLine("TEST test ");
+                    if (Utils.IsEmailExist(users, email))
                     {
-                        Console.SetCursorPosition(57, 19);
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine("You Are Already Registered! ");
-                        Thread.Sleep(5000);
-                        Console.ResetColor();
-                        Console.SetCursorPosition(57, 19);
-                        Console.WriteLine("                             ");
+                        string msg = "! You Are Already Registered !";
+                        Utils.DisplaySuccess(57, 19, msg);
+
                         Login.CustomerLogin("Customer");
                     }
                     break;
@@ -108,36 +88,28 @@ namespace BankingSystem.Customers
 
                 else
                 {
-                    Console.SetCursorPosition(57, 19);
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Please enter Valid Email !!");
-                    Thread.Sleep(2000);
-                    Console.ResetColor();
-                    Console.SetCursorPosition(57, 19);
-                    Console.WriteLine("                           ");
+                    string msg = "!! Please enter Valid Email !!";
+                    Utils.DisplayError(57, 19, msg);
                 }
             }
 
-            //Password
+            //Password 
             while (true)
             {
 
-                //password
+                //password label and input box.
                 while (true)
                 {
                     Console.SetCursorPosition(57, 24);
-                    password = Console.ReadLine();
-                    Console.SetCursorPosition(57, 24);
-                    Console.WriteLine(new string('*', password.Length));
-                    if (password.Length == 0 || password.Length < 8)
+                    password = Utils.OnlyStringInputHidden();
+                    if (password == null)
                     {
-                        Console.SetCursorPosition(57, 24);
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Please Enter Valid Password !!");
-                        Console.ResetColor();
-                        Thread.Sleep(1500);
-                        Console.SetCursorPosition(57, 24);
-                        Console.WriteLine("                              ");
+                        return;
+                    }
+                    else if (password.Length == 0 || password.Length < 8)
+                    {
+                        string msg = "!! Please Enter Valid Password !!";
+                        Utils.DisplayError(57, 24, msg);
                     }
                     else
                     {
@@ -145,42 +117,35 @@ namespace BankingSystem.Customers
                     }
 
                 }
-                //confirm password
+                //confirm password label and input box.
                 while (true)
                 {
                     Console.SetCursorPosition(57, 29);
-                    confirmPassword = Console.ReadLine();
-                    Console.SetCursorPosition(57, 29);
-                    Console.WriteLine(new string('*', password.Length));
-                    if (confirmPassword.Length == 0 || confirmPassword.Length < 8)
+                    confirmPassword = Utils.OnlyStringInputHidden();
+
+                    if (confirmPassword == null)
                     {
-                        Console.SetCursorPosition(57, 29);
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Please Enter Valid Password !!");
-                        Console.ResetColor();
-                        Thread.Sleep(1500);
-                        Console.SetCursorPosition(57, 29);
-                        Console.WriteLine("                              ");
+                        return;
+                    }
+                    else if (confirmPassword.Length == 0 || confirmPassword.Length < 8)
+                    {
+                        string msg = "!! Please Enter Valid Password !!";
+                        Utils.DisplayError(57, 29, msg);
                     }
                     else
                     {
                         break;
                     }
                 }
+
                 if (password != confirmPassword)
                 {
-                    Console.SetCursorPosition(57, 31);
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Password Does't match !!");
-                    Console.ResetColor();
-                    Thread.Sleep(1000);
-                    Console.SetCursorPosition(57, 31);
-                    Console.WriteLine("                        ");
-                    Console.SetCursorPosition(57, 24);
-                    Console.WriteLine("                        ");
-                    Console.SetCursorPosition(57, 29);
-                    Console.WriteLine("                        ");
+                    Utils.EraseText(25, 57, 31);
+                    Utils.EraseText(25, 57, 24);
+                    Utils.EraseText(25, 57, 29);
 
+                    string msg = "!! Password Does't match !!";
+                    Utils.DisplayError(57, 31, msg);
                 }
                 else
                 {
@@ -189,36 +154,16 @@ namespace BankingSystem.Customers
 
             }
 
-            //  fetching json file to check last account number.
-            string json = File.ReadAllText("users.json");
-            dynamic jsonObj = JsonConvert.DeserializeObject(json);
-            long accountNumber;
-            if (jsonObj != null)
-            {
-                accountNumber = jsonObj[jsonObj.Count - 1]["AccountNumber"] + 1;
-            }
-            else
-            {
-                accountNumber = 789456;
-            }
-            // storing data in json file 
+            //  fetching json file to fetch the last account number.
+            long accountNumber = users.Any() ? users.Last().AccountNumber + 1 : 789456;
 
-            List<TransactionHistory> transactionHistory = new List<TransactionHistory>
-            {   new TransactionHistory{
-                TransactionId = "",
-                TransactionAmount = 0,
-                TransactionDate = "",
-                TransactionType = "",
-                AccountNumber = 0,
-                AccountHolderName = ""
-            }
-            };
+            List<TransactionHistory> transactionHistory = new List<TransactionHistory>();
 
             Users user = new Users
             {
                 Name = name,
                 Email = email,
-                Password = password,
+                Password = Utils.HashPassword(password),
                 IsNewUser = true,
                 Pin = 0,
                 AccountNumber = accountNumber,
@@ -227,16 +172,18 @@ namespace BankingSystem.Customers
             };
 
 
-
+            // Adding data to list
             users.Add(user);
 
+            // writing updated data back to json file.
             string updatedJson = JsonConvert.SerializeObject(users, Formatting.Indented);
             File.WriteAllText(filePath, updatedJson);
 
+            string successMsg = "~~ Signup Successfull ~~";
+            Utils.DisplaySuccess(57, 24, successMsg);
 
-            Console.Write("\nPress Enter to Continue");
             Console.ReadLine();
-
+            return;
         }
     }
 }
