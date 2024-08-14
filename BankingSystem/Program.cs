@@ -1,5 +1,4 @@
-﻿using BankingSystem.Administrator;
-using BankingSystem.Customers;
+﻿using BankingSystem.Customers;
 namespace BankingSystem
 {
     internal class Program
@@ -16,13 +15,8 @@ namespace BankingSystem
             Console.WriteLine("\n\n\t\t\t\t\t\t\t     Choose a Option to continue");
             do
             {
-                //Console.Clear();
 
-                // Utils.NavBar();
                 Console.CursorVisible = false;
-
-                // Paint(61, 13, mainMenuOption, menuSelector);
-
 
                 for (int i = 0; i < mainMenuOption.Length; i++)
                 {
@@ -67,7 +61,7 @@ namespace BankingSystem
                             Console.Clear();
 
                             //Customer.Login();
-                            Login.CustomerLogin("Customer");
+                            Login.CustomerLogin("Customer", 80);
                             Console.Clear();
                             Utils.NavBar();
                             break;
@@ -84,6 +78,7 @@ namespace BankingSystem
                             break;
                         case 3:
                             done = true;
+                            Console.Clear();
                             break;
                         default:
                             Console.WriteLine("oops something went wrong");
@@ -98,26 +93,16 @@ namespace BankingSystem
         {
             Console.Title = "State Bank Of Bharat";
             Utils.NavBar();
-            // Utils.NavBar2();
-            // MainMenu();
-            Admin.ViewStats();
-            // ManageUsers.DeleteUser();
-            // Customer.CustomerMainMenu();
-            // testing development of customer menu
-            // Customer.CustomerMainMenu();
-
-
-            Console.ReadLine();
-
+            MainMenu();
         }
     }
 }
 
 // To-Do
 
-// Add transaction history for withdrawals and deposits.
-// Automatically generate transaction IDs.
-// Secure passwords using hashing.
-// Validate emails using regular expressions.
-// Include a login button on the signup page.
+// Add transaction history for withdrawal and deposit.
+// Automatically generate transaction IDsss.
+// passwords using hashing.
+// Validate emails using regex.
+// Add login button on the signup page.
 // Ensure input length is properly handled.

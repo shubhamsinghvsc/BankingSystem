@@ -32,8 +32,8 @@ namespace BankingSystem
             Console.SetCursorPosition(cordinateX, cordinateY);
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(message);
-            Console.ResetColor();
             Thread.Sleep(sleepDuration);
+            Console.ResetColor();
             Console.SetCursorPosition(cordinateX, cordinateY);
             Console.Write(new string(' ', message.Length));
         }

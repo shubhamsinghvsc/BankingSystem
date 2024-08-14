@@ -46,9 +46,9 @@ public class Customer
         Console.SetCursorPosition(0, 21);
         Utils.button(20, 65, "    withdraw");
 
-        Console.SetCursorPosition(56, 15);
-        Console.CursorVisible = true;
 
+        Console.CursorVisible = true;
+        Console.SetCursorPosition(56, 17);
         int withdrawAmount = Utils.OnlyIntegerInput();
         Console.CursorVisible = false;
 
@@ -68,12 +68,12 @@ public class Customer
             if (user.BankBalance < withdrawAmount)
             {
                 string msg = "!! Insufficent Balance !!";
-                Utils.DisplayError(61, 18, msg, 2000);
+                Utils.DisplayError(61, 19, msg, 2000);
             }
             else
             {
                 user.BankBalance -= withdrawAmount;
-                Console.SetCursorPosition(61, 18);
+                Console.SetCursorPosition(61, 19);
                 Console.WriteLine($"Rs. {withdrawAmount} Withdrawed");
                 user.transactionHistories.Add(
                     new TransactionHistory()
@@ -118,28 +118,45 @@ public class Customer
 
         Utils.boxMaker2(40, 55, "  Deposite Amount ");
 
+        Console.SetCursorPosition(0, 21);
+        Utils.button(20, 65, "    Deposite");
+
         Console.CursorVisible = true;
-        Console.SetCursorPosition(56, 15);
+        Console.SetCursorPosition(56, 17);
         int depositeAmount = Utils.OnlyIntegerInput();
         if (depositeAmount == -1)
         {
             return;
         }
 
-        user.BankBalance += depositeAmount;
-        Console.SetCursorPosition(56, 18);
-        Console.WriteLine($"Rs. {depositeAmount} Amount Deposited");
-        user.transactionHistories.Add(
-                    new TransactionHistory()
-                    {
-                        TransactionId = Guid.NewGuid().ToString("N"),
-                        TransactionType = "DR",
-                        TransactionAmount = depositeAmount,
-                        TransactionDate = DateTime.Now.ToString(),
-                        AccountHolderName = user.Name,
-                        AccountNumber = user.AccountNumber,
-                    });
+        Console.SetCursorPosition(0, 21);
+        Console.ForegroundColor = ConsoleColor.Green;
+        Utils.button(20, 65, "    Deposite");
+        Console.ResetColor();
 
+        ConsoleKeyInfo key = Console.ReadKey();
+        if (key.Key == ConsoleKey.Enter)
+        {
+            user.BankBalance += depositeAmount;
+            Console.SetCursorPosition(56, 19);
+            Console.WriteLine($"    Rs. {depositeAmount}  Deposited");
+            user.transactionHistories.Add(
+                        new TransactionHistory()
+                        {
+                            TransactionId = Guid.NewGuid().ToString("N"),
+                            TransactionType = "DR",
+                            TransactionAmount = depositeAmount,
+                            TransactionDate = DateTime.Now.ToString(),
+                            AccountHolderName = user.Name,
+                            AccountNumber = user.AccountNumber,
+                        });
+        }
+        else if (key.Key == ConsoleKey.Escape)
+        {
+            Console.Clear();
+            Utils.NavBar();
+            return;
+        }
         Utils.SaveUsers(users);
 
         Console.ReadLine();
@@ -162,6 +179,9 @@ public class Customer
         Utils.boxMaker2(40, 55, "Account Number");
         Utils.boxMaker2(40, 55, "Reenter Account Number");
         Utils.boxMaker2(40, 55, "Amount");
+
+        Console.SetCursorPosition(0, 32);
+        Utils.button(20, 65, "    Transfer");
 
         Console.CursorVisible = true;
 
@@ -202,6 +222,7 @@ public class Customer
                 {
                     return;
                 }
+                Console.CursorVisible = false;
             } while (accountNumber != reenterAccountNumber);
 
 
@@ -219,56 +240,71 @@ public class Customer
 
             else
             {
-                accountExist = true;
-                if (sender.BankBalance >= amount)
+                Console.SetCursorPosition(0, 32);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Utils.button(20, 65, "    Transfer");
+                Console.ResetColor();
+
+                ConsoleKeyInfo key = Console.ReadKey();
+                if (key.Key == ConsoleKey.Enter)
                 {
-                    receiver.BankBalance += amount;
-                    sender.BankBalance -= amount;
+                    accountExist = true;
+                    if (sender.BankBalance >= amount)
+                    {
+                        receiver.BankBalance += amount;
+                        sender.BankBalance -= amount;
 
-                    string msgAccNumber = "Money  Transfered  Successfull";
-                    Utils.DisplaySuccess(57, 29, msgAccNumber);
+                        string msgAccNumber = "Money  Transfered  Successfull";
+                        Utils.DisplaySuccess(57, 29, msgAccNumber);
 
-                    List<TransactionHistory> senderHistory = new List<TransactionHistory>();
-                    List<TransactionHistory> receiverHistory = new List<TransactionHistory>();
+                        List<TransactionHistory> senderHistory = new List<TransactionHistory>();
+                        List<TransactionHistory> receiverHistory = new List<TransactionHistory>();
 
-                    senderHistory = sender.transactionHistories;
-                    receiverHistory = receiver.transactionHistories;
+                        senderHistory = sender.transactionHistories;
+                        receiverHistory = receiver.transactionHistories;
 
-                    string transactionUid = Guid.NewGuid().ToString("N");
-                    senderHistory.Add(
-                        new TransactionHistory()
-                        {
-                            TransactionId = transactionUid,
-                            TransactionType = "DR",
-                            TransactionAmount = amount,
-                            TransactionDate = DateTime.Now.ToString(),
-                            AccountHolderName = receiver.Name,
-                            AccountNumber = accountNumber,
+                        string transactionUid = Guid.NewGuid().ToString("N");
+                        senderHistory.Add(
+                            new TransactionHistory()
+                            {
+                                TransactionId = transactionUid,
+                                TransactionType = "DR",
+                                TransactionAmount = amount,
+                                TransactionDate = DateTime.Now.ToString(),
+                                AccountHolderName = receiver.Name,
+                                AccountNumber = accountNumber,
 
-                        }
-                        );
-                    receiverHistory.Add(
-                        new TransactionHistory()
-                        {
-                            TransactionId = transactionUid,
-                            TransactionType = "CR",
-                            TransactionAmount = amount,
-                            TransactionDate = DateTime.Now.ToString(),
-                            AccountHolderName = sender.Name,
-                            AccountNumber = sender.AccountNumber,
+                            }
+                            );
+                        receiverHistory.Add(
+                            new TransactionHistory()
+                            {
+                                TransactionId = transactionUid,
+                                TransactionType = "CR",
+                                TransactionAmount = amount,
+                                TransactionDate = DateTime.Now.ToString(),
+                                AccountHolderName = sender.Name,
+                                AccountNumber = sender.AccountNumber,
 
-                        }
-                        );
+                            }
+                            );
 
-                    receiver.transactionHistories = receiverHistory;
-                    sender.transactionHistories = senderHistory;
+                        receiver.transactionHistories = receiverHistory;
+                        sender.transactionHistories = senderHistory;
+                    }
+                    else
+                    {
+                        string msg = "!! Insufficient Account Balance !!";
+                        Utils.DisplayError(70, 30, msg);
+                    }
                 }
-                else
+
+                else if (key.Key == ConsoleKey.Escape)
                 {
-                    string msg = "!! Insufficient Account Balance !!";
-                    Utils.DisplayError(70, 30, msg);
+                    Console.Clear();
+                    Utils.NavBar();
+                    return;
                 }
-
             }
         } while (!accountExist);
 

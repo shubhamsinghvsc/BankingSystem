@@ -9,6 +9,7 @@
         public int Pin { get; set; }
         public long AccountNumber { get; set; }
         public long BankBalance { get; set; }
+        public bool IsBlocked { get; set; }
         public List<TransactionHistory> transactionHistories { get; set; }
     }
 }

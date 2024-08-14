@@ -6,7 +6,14 @@ namespace BankingSystem.Administrator
 {
     public class Admin
     {
-        public static long gloabalAccountNumber;
+        private static long _gloabalAccountNumber;
+        public static long GloabalAccountNumber
+        {
+            get
+            {
+                return _gloabalAccountNumber;
+            }
+        }
         private const string filePath = "users.json";
         public static List<Users> LoadUsers()
         {
@@ -26,25 +33,30 @@ namespace BankingSystem.Administrator
 
         public static void CreateNewUser()
         {
-            Signup.CustomerSignup();
+            Signup.CustomerSignup("Open New Bank Account");
         }
         public static void ViewUsers()
         {
 
             Utils.NavBar();
             Utils.HeadingUnderlined("Users List", 65);
-            string filePath = "users.json";
-            List<Users> users = new List<Users>();
-            if (File.Exists(filePath))
-            {
-                string text = File.ReadAllText(filePath);
-                users = JsonConvert.DeserializeObject<List<Users>>(text) ?? new List<Users>();
-            }
+
+            List<Users> users = Utils.LoadUsers();
             for (int i = 0; i < users.Count; i++)
             {
                 Utils.DisplayBox("Name", users[i].Name, "A/C Number", Convert.ToString(users[i].AccountNumber), 40, 70);
             }
 
+            Console.SetCursorPosition(0, 0);
+            Console.CursorVisible = false;
+
+            int keyPressed = Utils.OnlyIntegerInputHiddenInput();
+            if (keyPressed == -1)
+            {
+                Console.Clear();
+                Utils.NavBar();
+                return;
+            }
             Console.ReadLine();
         }
         public static void ManageUser()
@@ -130,16 +142,14 @@ namespace BankingSystem.Administrator
                 else
                 {
                     accountExist = true;
-                    gloabalAccountNumber = user.AccountNumber;
-                    Console.Clear();
-                    Utils.NavBar();
-                    ManageUsers.ManageUserMenu();
+                    _gloabalAccountNumber = user.AccountNumber;
                 }
             } while (!accountExist);
 
-
+            Console.Clear();
+            Utils.NavBar();
             ManageUsers.ManageUserMenu();
-            Console.ReadLine();
+            return;
         }
 
         public static void ViewStats()
@@ -176,10 +186,24 @@ namespace BankingSystem.Administrator
             Console.SetCursorPosition(57, 25);
             Console.WriteLine(totalBalance);
 
+            Console.SetCursorPosition(0, 0);
+            Console.CursorVisible = false;
+
+            int keyPressed = Utils.OnlyIntegerInputHiddenInput();
+            if (keyPressed == -1)
+            {
+                Console.Clear();
+                Utils.NavBar();
+                return;
+            }
+
         }
 
         public static void Logout()
         {
+            Console.Clear();
+            Console.ResetColor();
+            Utils.NavBar();
             Program.MainMenu();
         }
         public static void Menu()
@@ -280,7 +304,6 @@ namespace BankingSystem.Administrator
         public static void AdminMainMenu()
         {
             Menu();
-
         }
     }
 }

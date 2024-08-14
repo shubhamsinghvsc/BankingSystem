@@ -5,7 +5,7 @@ namespace BankingSystem.Customers
 {
     public class Signup
     {
-        public static void CustomerSignup()
+        public static void CustomerSignup(string heading = "Signup", int padding = 65)
         {
             string name;
             string email;
@@ -15,15 +15,14 @@ namespace BankingSystem.Customers
             Console.Clear();
             Utils.NavBar();
 
-            Console.WriteLine("Signup".PadLeft(77, ' '));
-            Console.WriteLine("------".PadLeft(77, ' ') + "\n\n");
-
+            Utils.HeadingUnderlined(heading, padding);
             Utils.boxMaker2(40, 55, "Name");
             Utils.boxMaker2(40, 55, "Email");
             Utils.boxMaker2(40, 55, "Password (Minmum 8 Characters)");
             Utils.boxMaker2(40, 55, "Confirm Password");
 
-            Utils.button(15, 67, "  Sign Up");
+            Console.SetCursorPosition(0, 34);
+            Utils.button(20, 65, "    SignUp");
 
             Console.CursorVisible = true;
 
@@ -39,7 +38,7 @@ namespace BankingSystem.Customers
             // Name label and input box.
             while (true)
             {
-                Console.SetCursorPosition(57, 14);
+                Console.SetCursorPosition(57, 15);
                 name = Utils.OnlyStringInput();
 
                 if (name == null)
@@ -49,7 +48,7 @@ namespace BankingSystem.Customers
                 else if (name.Length == 0)
                 {
                     string msg = "!! Please Enter Your Name. !!";
-                    Utils.DisplayError(57, 14, msg);
+                    Utils.DisplayError(57, 15, msg);
                 }
                 else
                 {
@@ -60,7 +59,7 @@ namespace BankingSystem.Customers
             //Email label and input box.
             while (true)
             {
-                Console.SetCursorPosition(57, 19);
+                Console.SetCursorPosition(57, 20);
                 email = Utils.OnlyStringInput();
                 email = email.ToLower();
 
@@ -71,7 +70,7 @@ namespace BankingSystem.Customers
                 else if (email.Length == 0)
                 {
                     string msg = "!! Email is a required field !!";
-                    Utils.DisplayError(57, 19, msg);
+                    Utils.DisplayError(57, 20, msg);
                 }
                 else if (Utils.IsValidEmail(email))
                 {
@@ -79,7 +78,7 @@ namespace BankingSystem.Customers
                     if (Utils.IsEmailExist(users, email))
                     {
                         string msg = "! You Are Already Registered !";
-                        Utils.DisplaySuccess(57, 19, msg);
+                        Utils.DisplaySuccess(57, 20, msg);
 
                         Login.CustomerLogin("Customer");
                     }
@@ -89,7 +88,7 @@ namespace BankingSystem.Customers
                 else
                 {
                     string msg = "!! Please enter Valid Email !!";
-                    Utils.DisplayError(57, 19, msg);
+                    Utils.DisplayError(57, 20, msg);
                 }
             }
 
@@ -100,7 +99,7 @@ namespace BankingSystem.Customers
                 //password label and input box.
                 while (true)
                 {
-                    Console.SetCursorPosition(57, 24);
+                    Console.SetCursorPosition(57, 25);
                     password = Utils.OnlyStringInputHidden();
                     if (password == null)
                     {
@@ -109,7 +108,7 @@ namespace BankingSystem.Customers
                     else if (password.Length == 0 || password.Length < 8)
                     {
                         string msg = "!! Please Enter Valid Password !!";
-                        Utils.DisplayError(57, 24, msg);
+                        Utils.DisplayError(57, 25, msg);
                     }
                     else
                     {
@@ -120,7 +119,7 @@ namespace BankingSystem.Customers
                 //confirm password label and input box.
                 while (true)
                 {
-                    Console.SetCursorPosition(57, 29);
+                    Console.SetCursorPosition(57, 30);
                     confirmPassword = Utils.OnlyStringInputHidden();
 
                     if (confirmPassword == null)
@@ -130,7 +129,7 @@ namespace BankingSystem.Customers
                     else if (confirmPassword.Length == 0 || confirmPassword.Length < 8)
                     {
                         string msg = "!! Please Enter Valid Password !!";
-                        Utils.DisplayError(57, 29, msg);
+                        Utils.DisplayError(57, 30, msg);
                     }
                     else
                     {
@@ -138,20 +137,39 @@ namespace BankingSystem.Customers
                     }
                 }
 
-                if (password != confirmPassword)
-                {
-                    Utils.EraseText(25, 57, 31);
-                    Utils.EraseText(25, 57, 24);
-                    Utils.EraseText(25, 57, 29);
+                Console.SetCursorPosition(0, 34);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Utils.button(20, 65, "    SignUp");
+                Console.ResetColor();
 
-                    string msg = "!! Password Does't match !!";
-                    Utils.DisplayError(57, 31, msg);
-                }
-                else
+                ConsoleKeyInfo key = Console.ReadKey();
+                if (key.Key == ConsoleKey.Enter)
                 {
-                    break;
-                }
+                    if (password != confirmPassword)
+                    {
+                        Utils.EraseText(25, 57, 32);
+                        Utils.EraseText(25, 57, 25);
+                        Utils.EraseText(25, 57, 30);
 
+                        string msg = "!! Password Does't match !!";
+                        Utils.DisplayError(57, 32, msg);
+
+                        Console.SetCursorPosition(0, 34);
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Utils.button(20, 65, "    SignUp");
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                else if (key.Key == ConsoleKey.Escape)
+                {
+                    Console.Clear();
+                    Utils.NavBar();
+                    return;
+                }
             }
 
             //  fetching json file to fetch the last account number.
@@ -168,6 +186,7 @@ namespace BankingSystem.Customers
                 Pin = 0,
                 AccountNumber = accountNumber,
                 BankBalance = 0,
+                IsBlocked = false,
                 transactionHistories = transactionHistory
             };
 
@@ -179,8 +198,10 @@ namespace BankingSystem.Customers
             string updatedJson = JsonConvert.SerializeObject(users, Formatting.Indented);
             File.WriteAllText(filePath, updatedJson);
 
-            string successMsg = "~~ Signup Successfull ~~";
-            Utils.DisplaySuccess(57, 24, successMsg);
+            string successMsg = "     ~~ Signup Successfull ~~";
+            Utils.DisplaySuccess(57, 32, successMsg);
+            Console.Clear();
+            Login.CustomerLogin();
 
             Console.ReadLine();
             return;

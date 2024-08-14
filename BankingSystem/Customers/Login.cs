@@ -1,5 +1,4 @@
 ﻿using BankingSystem.Models;
-using Newtonsoft.Json;
 using static BankingSystem.Customers.Customer;
 
 namespace BankingSystem.Customers
@@ -24,14 +23,7 @@ namespace BankingSystem.Customers
             string email;
             string password;
 
-
-            string filePath = "users.json";
-            List<Users> users = new List<Users>();
-            if (File.Exists(filePath))
-            {
-                string text = File.ReadAllText(filePath);
-                users = JsonConvert.DeserializeObject<List<Users>>(text) ?? new List<Users>();
-            }
+            List<Users> users = Utils.LoadUsers();
 
 
             Console.Clear();
@@ -42,7 +34,10 @@ namespace BankingSystem.Customers
             Console.WriteLine("\n");
             Utils.boxMaker2(40, 55, "Email ID");
             Utils.boxMaker2(40, 55, "Password");
-            Utils.button(15, 67, "  Log In");
+
+            Console.SetCursorPosition(0, 23);
+            Utils.button(20, 65, "    Login ");
+
             Console.CursorVisible = true;
 
             while (true)
@@ -53,31 +48,17 @@ namespace BankingSystem.Customers
                 {
                     return;
                 }
-                email = email.ToLower();
-                if (email.Length == 0)
+                else if (email.Length == 0)
                 {
-                    Console.SetCursorPosition(57, 14);
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Email is a required field!!");
-                    Console.ResetColor();
-                    Thread.Sleep(2000);
-                    Console.SetCursorPosition(57, 14);
-                    Console.WriteLine("                           ");
-
+                    string msg = "!! Email is a required field!!";
+                    Utils.DisplayError(57, 14, msg);
                 }
-                else if (email.EndsWith(".com") && email.Contains('@') && !email.StartsWith('@'))
+                else if (Utils.IsValidEmail(email))
                 {
-
                     if (!Utils.IsEmailExist(users, email))
                     {
-                        Console.SetCursorPosition(57, 14);
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("You Are Not Registered !! ");
-                        Thread.Sleep(2000);
-                        Console.ResetColor();
-                        Console.SetCursorPosition(57, 14);
-                        Console.WriteLine("                             ");
-
+                        string msg = "!! You Are Not Registered !! ";
+                        Utils.DisplayError(57, 14, msg);
                     }
                     else
                     {
@@ -88,13 +69,8 @@ namespace BankingSystem.Customers
 
                 else
                 {
-                    Console.SetCursorPosition(57, 16);
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Please enter Valid Email !!");
-                    Thread.Sleep(2000);
-                    Console.ResetColor();
-                    Console.SetCursorPosition(57, 19);
-                    Console.WriteLine("                           ");
+                    string msg = "!! Please enter Valid Email !!";
+                    Utils.DisplayError(57, 14, msg);
                 }
             }
 
@@ -107,43 +83,48 @@ namespace BankingSystem.Customers
                     Console.SetCursorPosition(57, 19);
                     password = Utils.OnlyStringInputHidden();
 
-                    if (password.Length == 0 || password.Length < 8)
-                    {
-                        string msg = "!! Please Enter Valid Password !!";
-                        Utils.DisplayError(57, 19, msg);
-                    }
-                    else
-                    {
-                        Users user = users.FirstOrDefault(user => user.Email == email);
+                    Console.CursorVisible = false;
 
-                        if (IsPasswordMatched(user, password))
+                    if (password == null)
+                    {
+                        return;
+                    }
+                    Console.SetCursorPosition(0, 23);
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Utils.button(20, 65, "    Login ");
+                    Console.ResetColor();
+
+                    ConsoleKeyInfo key = Console.ReadKey();
+                    if (key.Key == ConsoleKey.Enter)
+                    {
+                        if (password.Length == 0 || password.Length < 8)
                         {
-                            Utils.whoIsLoggedIn = email;
-                            int index = 0;
-                            for (int i = 0; i < users.Count; i++)
-                            {
-                                if (users[i].Email == email)
-                                {
-                                    index = i;
-                                    break;
-                                }
-                            }
-                            Utils.LoggedUserName = users[index].Name;
-                            CustomerMainMenu();
+                            string msg = "!! Incorrect Password !!";
+                            Utils.DisplayError(57, 19, msg);
                         }
-                        break;
-                    }
+                        else
+                        {
+                            Users user = users.FirstOrDefault(user => user.Email == email);
 
+                            if (IsPasswordMatched(user, password))
+                            {
+                                Utils.whoIsLoggedIn = email;
+                                Utils.LoggedUserName = user.Name;
+                                CustomerMainMenu();
+                            }
+                            break;
+                        }
+                    }
+                    else if (key.Key == ConsoleKey.Escape)
+                    {
+                        Console.Clear();
+                        Utils.NavBar();
+                        return;
+                    }
                 }
 
 
             }
-
-
-            Console.WriteLine("New Customer ...");
-            Console.Write("Press Enter to Continue");
-            Console.ReadLine();
-
         }
     }
 }
